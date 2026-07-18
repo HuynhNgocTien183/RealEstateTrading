@@ -62,7 +62,7 @@ class ListingImage(models.Model):
     listing = models.ForeignKey(
         Listing, on_delete=models.CASCADE, related_name='images'
     )
-    image = models.ImageField(upload_to='listings/%Y/%m/')
+    image = models.ImageField(upload_to='listingImages/%Y/%m/')
     is_primary = models.BooleanField(default=False)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
