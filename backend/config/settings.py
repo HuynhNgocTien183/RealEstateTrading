@@ -15,13 +15,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    # third-party
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
 
-    # local apps
     'apps.users',
     'apps.listings',
     'apps.interactions',
@@ -32,7 +29,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',   # phải đứng trên CommonMiddleware
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -62,7 +59,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# ===== DATABASE (MySQL) =====
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -77,10 +74,9 @@ DATABASES = {
     }
 }
 
-# ===== CUSTOM USER MODEL =====
 AUTH_USER_MODEL = 'users.User'
 
-# ===== REST FRAMEWORK + JWT =====
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -88,6 +84,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 12,
 }
 
 SIMPLE_JWT = {
@@ -97,7 +96,7 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
 }
 
-# ===== CORS (cho phép Svelte frontend gọi API) =====
+#Svelte gọi API
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
@@ -111,6 +110,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ===== MEDIA FILES (ảnh upload) =====
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'

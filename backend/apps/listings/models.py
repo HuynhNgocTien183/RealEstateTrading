@@ -14,6 +14,25 @@ class Listing(models.Model):
         SOLD = 'sold', 'Đã bán'
         HIDDEN = 'hidden', 'Đã ẩn'
 
+    class ApprovalStatus(models.TextChoices):
+        PENDING = 'pending', 'Chờ duyệt'
+        APPROVED = 'approved', 'Đã duyệt'
+        REJECTED = 'rejected', 'Bị từ chối'
+
+    approval_status = models.CharField(
+        max_length=10,
+        choices=ApprovalStatus.choices,
+        default=ApprovalStatus.PENDING,
+    )
+    rejection_reason = models.TextField(blank=True, null=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='reviewed_listings',
+    )
+
     seller = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,

@@ -18,10 +18,22 @@ class ListingSerializer(serializers.ModelSerializer):
             'id', 'seller', 'seller_username', 'title', 'description',
             'price', 'area', 'bedrooms', 'bathrooms', 'property_type',
             'address', 'city', 'district', 'latitude', 'longitude',
-            'status', 'predicted_price', 'views_count',
+            'status', 'approval_status', 'rejection_reason',   # thêm 2 field mới
+            'predicted_price', 'views_count',
             'images', 'created_at', 'updated_at',
         )
-        read_only_fields = ('id', 'seller', 'predicted_price', 'views_count', 'created_at', 'updated_at')
+        read_only_fields = (
+            'id', 'seller', 'approval_status', 'rejection_reason',
+            'reviewed_at', 'reviewed_by', 'predicted_price', 'views_count',
+            'created_at', 'updated_at',
+        )
+
+
+# Thêm serializer riêng cho admin duyệt bài
+class ListingReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Listing
+        fields = ('approval_status', 'rejection_reason')
 
 
 class ListingCreateSerializer(serializers.ModelSerializer):

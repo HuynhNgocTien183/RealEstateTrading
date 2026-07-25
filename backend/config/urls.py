@@ -15,8 +15,8 @@ urlpatterns = [
     #App routes
     path('api/users/', include('apps.users.urls')),
     path('api/listings/', include('apps.listings.urls')),
-    # path('api/interactions/', include('apps.interactions.urls')),
-    # path('api/predictions/', include('apps.predictions.urls')),
+    path('api/predictions/', include('apps.predictions.urls')),
+    path('api/interactions/', include('apps.interactions.urls')),
 ]
 
 if settings.DEBUG:

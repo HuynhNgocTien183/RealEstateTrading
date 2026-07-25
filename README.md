@@ -183,5 +183,4 @@ Model sau khi train sẽ được lưu vào `ml/models/`, backend (`apps/predict
 | POST | `/api/interactions/messages/` | Gửi tin nhắn/liên hệ |
 
 
-
-Dự án phục vụ mục đích học tập / đồ án môn học.
+Hết.
