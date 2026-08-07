@@ -1,0 +1,45 @@
+.home {
+  padding: var(--spacing-md) 0;
+}
+
+.home h1 {
+  font-size: 1.6rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.25rem;
+}
+
+.home-state-message {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--color-text-muted);
+}
+
+.home-state-message.error {
+  color: var(--color-danger);
+}
+
+.home-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-xl);
+}
+
+.home-pagination button {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-border-input);
+  background: var(--color-white);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.home-pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
