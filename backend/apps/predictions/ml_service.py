@@ -1,10 +1,9 @@
 """
-Service xử lý dự đoán giá nhà — dùng model Random Forest/XGBoost/LightGBM
-đã huấn luyện trong ml/models/best_model.pkl (chọn tự động model tốt nhất).
+Service xử lý dự đoán giá nhà — dùng model XGBoost đã huấn luyện
+trong ml/models/best_model.pkl.
 """
 
 import os
-import re
 import joblib
 import numpy as np
 import pandas as pd
@@ -22,7 +21,7 @@ _model_name = "unknown"
 
 if os.path.exists(MODEL_PATH):
     _saved = joblib.load(MODEL_PATH)
-    _model = _saved['model']                 # Pipeline đầy đủ (preprocessor + model)
+    _model = _saved['model']
     _feature_names = _saved['feature_names']
     _cat_cols = _saved['cat_cols']
     _num_cols = _saved['num_cols']
@@ -31,11 +30,6 @@ if os.path.exists(MODEL_PATH):
 
 
 def _extract_district_from_text(city, district):
-    """
-    Ghép city/district giống định dạng lúc train (nếu cần).
-    Model train theo cột 'District' lấy từ Address gốc, nên ở đây
-    ta dùng thẳng giá trị district người dùng nhập trong form đăng tin.
-    """
     if district:
         return district.strip()
     return city.strip() if city else 'Khác'
@@ -45,7 +39,7 @@ def predict_price(area, frontage=None, access_road=None, floors=None,
                    bedrooms=0, bathrooms=0, legal_status=None,
                    furniture_state=None, city=None, district=None, **kwargs):
     """
-    Input: các đặc trưng BĐS (đơn vị Price ra kết quả là TỶ VNĐ, khớp với dữ liệu train).
+    Input: các đặc trưng BĐS.
     Output: (predicted_price: float [đơn vị VNĐ], model_version: str)
     """
     if _model is None:
@@ -64,10 +58,7 @@ def predict_price(area, frontage=None, access_road=None, floors=None,
     furniture_state = furniture_state or 'Full'
     district_value = _extract_district_from_text(city, district)
 
-    # ===== Tính lại các đặc trưng phái sinh giống lúc train =====
-    frontage_area_ratio = frontage / (area + 1)
-    total_rooms = bedrooms + bathrooms
-    rooms_per_floor = total_rooms / (floors + 1)
+    total_bed_bath = bedrooms + bathrooms
 
     row = {
         'District': district_value,
@@ -79,20 +70,19 @@ def predict_price(area, frontage=None, access_road=None, floors=None,
         'Floors': floors,
         'Bedrooms': bedrooms,
         'Bathrooms': bathrooms,
-        'Frontage_Area_Ratio': frontage_area_ratio,
-        'Total_Rooms': total_rooms,
-        'Rooms_per_Floor': rooms_per_floor,
+        'Frontage_Area_Ratio': frontage / (area + 1),
+        'Total_Bed_Bath': total_bed_bath,
+        'Rooms_per_Floor': total_bed_bath / (floors + 1),
     }
 
-    # Chỉ giữ đúng các cột model đã học lúc train, đúng thứ tự
     input_df = pd.DataFrame([row])[_feature_names]
 
     pred = _model.predict(input_df)[0]
 
     if _log_transformed:
-        pred = np.expm1(pred)   # chuyển ngược từ log về giá thật
+        pred = np.expm1(pred)
 
-    # Model train theo đơn vị "tỷ VNĐ" -> quy đổi ra VNĐ để đồng bộ với field price trong Listing
+    # Dataset train có Price đơn vị TỶ VNĐ -> quy đổi ra VNĐ nguyên
     predicted_price_vnd = float(pred) * 1_000_000_000
 
     return round(predicted_price_vnd, -6), f"{_model_name}"

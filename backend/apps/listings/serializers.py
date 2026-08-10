@@ -16,7 +16,7 @@ class ListingSerializer(serializers.ModelSerializer):
         model = Listing
         fields = (
             'id', 'seller', 'seller_username', 'title', 'description',
-            'price', 'area', 'bedrooms', 'bathrooms', 'property_type',
+            'price', 'area', 'bedrooms', 'bathrooms', 'floors', 'property_type',
             'address', 'city', 'district', 'latitude', 'longitude',
             'status', 'approval_status', 'rejection_reason',   # thêm 2 field mới
             'predicted_price', 'views_count',

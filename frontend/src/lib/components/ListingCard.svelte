@@ -1,5 +1,4 @@
 <script>
-  import { Link } from 'svelte-routing';
   import '../../styles/listingCart.css';
 
   export let listing;
@@ -7,10 +6,7 @@
   function formatPrice(price) {
     if (!price) return 'Thoả thuận';
     const num = Number(price);
-    if (num >= 1000) {
-      return `${(num / 1000).toFixed(1)} tỷ`;
-    }
-    return `${num.toFixed(0)} triệu`;
+    return `${num.toFixed(0)} VND`;
   }
 
   $: primaryImage = listing.images?.find((img) => img.is_primary)?.image
@@ -18,7 +14,7 @@
     || null;
 </script>
 
-<Link to={`/listings/${listing.id}`} class="card-link">
+<a href={`#/listings/${listing.id}`} class="card-link">
   <div class="card">
     <div class="card-image-wrapper">
       {#if primaryImage}
@@ -26,7 +22,6 @@
       {:else}
         <div class="card-no-image">Chưa có ảnh</div>
       {/if}
-      <span class="card-badge">{listing.property_type}</span>
     </div>
 
     <div class="card-body">
@@ -43,4 +38,4 @@
       </div>
     </div>
   </div>
-</Link>
+</a>

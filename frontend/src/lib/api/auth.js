@@ -7,7 +7,12 @@ export async function login(username, password) {
 
 export async function register(userData) {
   const res = await client.post('/users/register/', userData);
-  return res.data; // trả JWT ngay sau khi đăng ký
+  return res.data; // trả JWT ngay sau khi đăng ký: { access, refresh, user? }
+}
+
+
+export async function logout(refreshToken) {
+  return client.post('/users/logout/', { refresh: refreshToken });
 }
 
 export async function getMe() {
@@ -15,6 +20,7 @@ export async function getMe() {
   return res.data;
 }
 
-export async function logout(refreshToken) {
-  return client.post('/users/logout/', { refresh: refreshToken });
+export async function updateMe(data) {
+  const res = await client.patch('/users/me/', data);
+  return res.data;
 }

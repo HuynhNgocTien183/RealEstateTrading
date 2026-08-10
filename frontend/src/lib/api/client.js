@@ -30,15 +30,21 @@ client.interceptors.response.use(
           const res = await axios.post(`${API_BASE_URL}/token/refresh/`, {
             refresh: refreshToken,
           });
+
           const newAccessToken = res.data.access;
           localStorage.setItem('access_token', newAccessToken);
+
+          // QUAN TRỌNG: lưu lại refresh token MỚI (do backend đã bật ROTATE_REFRESH_TOKENS)
+          if (res.data.refresh) {
+            localStorage.setItem('refresh_token', res.data.refresh);
+          }
+
           originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
           return client(originalRequest);
         } catch (refreshError) {
-          // Refresh token cũng hết hạn -> đăng xuất
           localStorage.removeItem('access_token');
           localStorage.removeItem('refresh_token');
-          window.location.href = '/login';
+          window.location.href = '#/login';
           return Promise.reject(refreshError);
         }
       }

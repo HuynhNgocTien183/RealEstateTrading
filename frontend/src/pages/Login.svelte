@@ -1,7 +1,7 @@
 <script>
-  import { navigate } from 'svelte-routing';
-  import { login as apiLogin, getMe } from '../lib/api/auth.js';
-  import { authStore } from '../lib/stores/auth.js';
+  import { push } from 'svelte-spa-router';
+  import { login as apiLogin, getMe } from '../lib/api/auth';
+  import { authStore } from '../lib/stores/auth';
   import '../styles/login.css';
 
   let username = '';
@@ -20,7 +20,7 @@
       const user = await getMe();
       authStore.login(user, access, refresh);
 
-      navigate('/');
+      push('/');
     } catch (err) {
       error = err.response?.data?.detail || 'Đăng nhập thất bại. Kiểm tra lại tài khoản/mật khẩu.';
     } finally {

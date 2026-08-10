@@ -4,6 +4,9 @@
   import ListingCard from '../lib/components/ListingCard.svelte';
   import SearchBar from '../lib/components/SearchBar.svelte';
   import '../styles/home.css';
+  import PredictionForm from '../lib/components/PredictionForm.svelte';
+  
+  
   let listings = [];
   let loading = true;
   let error = '';
@@ -57,6 +60,7 @@
   <h1>Tìm kiếm Bất động sản</h1>
 
   <SearchBar on:filter={handleFilter} />
+  <PredictionForm />
 
   {#if loading}
     <div class="home-state-message">Đang tải danh sách...</div>

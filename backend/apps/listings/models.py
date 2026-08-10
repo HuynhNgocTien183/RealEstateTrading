@@ -44,6 +44,7 @@ class Listing(models.Model):
 
     price = models.DecimalField(max_digits=15, decimal_places=2)
     area = models.DecimalField(max_digits=10, decimal_places=2, help_text="Diện tích (m²)")
+    floors = models.PositiveSmallIntegerField(null=True, blank=True, help_text="Số tầng")
     bedrooms = models.PositiveSmallIntegerField(default=0)
     bathrooms = models.PositiveSmallIntegerField(default=0)
 

@@ -1,34 +1,50 @@
 <script>
-  import { Router, Route } from 'svelte-routing';
+  import { onMount } from 'svelte';
+  import Router from 'svelte-spa-router';
   import Navbar from './lib/components/Navbar.svelte';
-  import Home from './pages/Home.svelte';
-  import Login from './pages/Login.svelte';
-  import Register from './pages/Register.svelte';
-  import ListingDetail from './pages/ListingDetail.svelte';
-  import MyListing from './pages/MyListing.svelte';
-  import CreateListing from './pages/CreateListing.svelte';
-  import AdminReview from './pages/AdminReview.svelte';
+  import routes from './routes.js';
+  import { authStore } from './lib/stores/auth';
+  import { getMe } from './lib/api/auth';
 
-  export let url = '';
+  let checkingSession = true;
+
+  onMount(async () => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      try {
+        const user = await getMe();
+        authStore.setUser(user);
+      } catch (err) {
+        // Token đã hết hạn và refresh cũng thất bại -> coi như chưa đăng nhập
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+      }
+    }
+    checkingSession = false;
+  });
 </script>
 
-<Router {url}>
+{#if checkingSession}
+  <div class="app-loading">Đang tải...</div>
+{:else}
   <Navbar />
   <main>
-    <Route path="/" component={Home} />
-    <Route path="/login" component={Login} />
-    <Route path="/register" component={Register} />
-    <Route path="/listings/:id" component={ListingDetail} />
-    <Route path="/my-listings" component={MyListing} />
-    <Route path="/create-listing" component={CreateListing} />
-    <Route path="/admin/review" component={AdminReview} />
+    <Router {routes} />
   </main>
-</Router>
+{/if}
 
 <style>
   main {
     max-width: 1200px;
     margin: 0 auto;
     padding: 1rem;
+  }
+
+  .app-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    color: var(--color-text-muted);
   }
 </style>

@@ -38,6 +38,12 @@ export async function approveListing(id) {
   return client.post(`/listings/${id}/approve/`);
 }
 
+
 export async function rejectListing(id, reason) {
-  return client.post(`/listings/${id}/reject/`, { rejection_reason: reason });
+  return client.post(`/listings/${id}/reject/`, { reason });
+}
+
+export async function getRejectedListings() {
+  const res = await client.get('/listings/rejected/');
+  return res.data;
 }

@@ -1,7 +1,6 @@
 <script>
-  import { Link } from 'svelte-routing';
-  import { authStore } from '../stores/auth.js';
-  import { logout as apiLogout } from '../api/auth.js';
+  import { authStore } from '../stores/auth';
+  import { logout as apiLogout } from '../api/auth';
   import '../../styles/navbar.css';
 
   async function handleLogout() {
@@ -12,23 +11,33 @@
       console.error(err);
     } finally {
       authStore.logout();
-      window.location.href = '/';
+      window.location.href = '#/';
     }
   }
 </script>
 
 <nav class="navbar">
-  <Link to="/" class="navbar-logo">RealEstateTrading</Link>
+  <a href="#/" class="navbar-logo">RealEstateTrading</a>
 
   <div class="navbar-links">
     {#if $authStore.isAuthenticated}
-      <Link to="/create-listing">Đăng tin</Link>
-      <Link to="/my-listings">Tin của tôi</Link>
+      {#if $authStore.user?.role === 'admin'}
+        <a href="#/admin/review">Duyệt tin</a>
+      {/if}
+      {#if $authStore.user?.role === 'seller'}
+        <a href="#/create-listing">Đăng tin</a>
+        <a href="#/my-listings">Tin của tôi</a>
+      {/if}
+      {#if $authStore.user?.role === 'buyer'}
+        <a href="#/saved-listings">Tin đã thích</a>
+      {/if}
+      <a href="#/profile">Hồ sơ</a>
+      
       <span class="navbar-username">Xin chào, {$authStore.user?.username}</span>
       <button class="navbar-logout-btn" on:click={handleLogout}>Đăng xuất</button>
     {:else}
-      <Link to="/login">Đăng nhập</Link>
-      <Link to="/register">Đăng ký</Link>
+      <a href="#/login">Đăng nhập</a>
+      <a href="#/register">Đăng ký</a>
     {/if}
   </div>
 </nav>

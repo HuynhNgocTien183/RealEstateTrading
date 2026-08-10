@@ -82,6 +82,12 @@ class ListingViewSet(viewsets.ModelViewSet):
         listing.save()
         return Response({"detail": "Đã duyệt bài đăng."})
 
+    @action(detail=False, methods=['get'], permission_classes=[IsAdminUser])
+    def rejected(self, request):
+        queryset = Listing.objects.filter(approval_status='rejected').order_by('-reviewed_at')
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated, IsAdminUser])
     def reject(self, request, pk=None):
         """Admin từ chối 1 tin đăng: POST /api/listings/{id}/reject/  Body: {"reason": "..."}"""
