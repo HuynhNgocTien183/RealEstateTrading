@@ -5,7 +5,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q
 from django.utils import timezone
 
-from .models import Listing
+from .filters import ListingFilter
+from .models import Listing, ListingImage
 from .serializers import ListingSerializer, ListingCreateSerializer
 from .permissions import IsSellerOrReadOnly, IsAdminUser
 
@@ -28,7 +29,7 @@ class ListingViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsSellerOrReadOnly]
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['property_type', 'city', 'district', 'status', 'bedrooms']
+    filterset_class = ListingFilter
     search_fields = ['title', 'description', 'address']
     ordering_fields = ['price', 'area', 'created_at']
 
@@ -36,17 +37,24 @@ class ListingViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
 
-        # Admin thấy toàn bộ
+        # ===== Trang Home / danh sách công khai (list):
+        # CHỈ hiện tin đã duyệt + đang bán, cho MỌI người dùng, kể cả admin/chủ tin =====
+        if self.action == 'list':
+            return Listing.objects.filter(
+                approval_status=Listing.ApprovalStatus.APPROVED,
+                status=Listing.Status.AVAILABLE,
+            )
+
+        # ===== Các action khác (retrieve/update/partial_update/destroy):
+        # giữ quyền rộng hơn để chủ tin/admin vẫn xem/sửa/xoá được tin pending/rejected của họ =====
         if user.is_authenticated and user.is_staff:
             return Listing.objects.all()
 
-        # Seller/buyer đã đăng nhập: thấy bài approved + bài của chính mình
         if user.is_authenticated:
             return Listing.objects.filter(
                 Q(approval_status=Listing.ApprovalStatus.APPROVED) | Q(seller=user)
             )
 
-        # Khách chưa đăng nhập: chỉ thấy bài đã duyệt và đang bán
         return Listing.objects.filter(
             approval_status=Listing.ApprovalStatus.APPROVED,
             status=Listing.Status.AVAILABLE,
@@ -60,8 +68,15 @@ class ListingViewSet(viewsets.ModelViewSet):
 
     # ===== Tạo tin đăng: tự gán seller, mặc định pending (đã xử lý ở model) =====
     def perform_create(self, serializer):
-        serializer.save(seller=self.request.user)
+        listing = serializer.save(seller=self.request.user)
 
+        images = self.request.FILES.getlist('images')
+        for i, image_file in enumerate(images):
+            ListingImage.objects.create(
+                listing=listing,
+                image=image_file,
+                is_primary=(i == 0),  # Ảnh đầu tiên làm ảnh đại diện
+            )
     # ===== Xem chi tiết: tự tăng lượt xem =====
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()

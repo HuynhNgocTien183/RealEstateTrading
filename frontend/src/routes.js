@@ -15,6 +15,7 @@ export default {
   '/listings/:id': ListingDetail,
   '/my-listings': MyListing,
   '/create-listing': CreateListing,
+  '/edit-listing/:id': CreateListing,
   '/admin/review': AdminReview,
   '/profile': Profile,
   '/saved-listings': SavedListings,

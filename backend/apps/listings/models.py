@@ -57,6 +57,7 @@ class Listing(models.Model):
     district = models.CharField(max_length=100)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    google_maps_url = models.URLField(max_length=500, blank=True, null=True)
 
     status = models.CharField(
         max_length=10, choices=Status.choices, default=Status.AVAILABLE
@@ -73,6 +74,14 @@ class Listing(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+    @property
+    def maps_link(self):
+        if self.google_maps_url:
+            return self.google_maps_url
+        if self.latitude and self.longitude:
+            return f"https://www.google.com/maps?q={self.latitude},{self.longitude}"
+        return None
 
     def __str__(self):
         return f"{self.title} - {self.price:,.0f} VNĐ"

@@ -41,7 +41,7 @@ class ListingCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Listing
         fields = (
-            'title', 'description', 'price', 'area', 'bedrooms', 'bathrooms',
+            'title', 'description', 'price', 'area', 'floors', 'bedrooms', 'bathrooms',
             'property_type', 'address', 'city', 'district', 'latitude', 'longitude',
-            'status',
+            'google_maps_url', 'status',
         )

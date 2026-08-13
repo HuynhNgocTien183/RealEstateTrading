@@ -10,8 +10,22 @@ export async function getListingDetail(id) {
   return res.data;
 }
 
-export async function createListing(data) {
-  const res = await client.post('/listings/', data);
+export async function createListing(data, imageFiles = []) {
+  const formData = new FormData();
+
+  Object.entries(data).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      formData.append(key, value);
+    }
+  });
+
+  imageFiles.forEach((file) => {
+    formData.append('images', file);
+  });
+
+  const res = await client.post('/listings/', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
   return res.data;
 }
 
