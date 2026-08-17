@@ -2,13 +2,15 @@
   import { createEventDispatcher } from 'svelte';
   import '../../styles/searchBar.css';
 
+  export let initialFilters = {};
+
   const dispatch = createEventDispatcher();
 
-  let search = '';
-  let propertyType = '';
-  let district = '';
-  let minPrice = '';
-  let maxPrice = '';
+  let search = initialFilters.search || '';
+  let propertyType = initialFilters.property_type || '';
+  let district = initialFilters.district || '';
+  let minPrice = initialFilters.price_min || '';
+  let maxPrice = initialFilters.price_max || '';
 
   const districtOptions = [
     'Quận 1', 'Quận 3', 'Quận 4', 'Quận 5', 'Quận 6', 'Quận 7',

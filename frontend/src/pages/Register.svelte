@@ -15,6 +15,10 @@
   let error = '';
   let loading = false;
 
+  let avatarFile = null;
+  let avatarPreview = '';
+
+
   async function handleSubmit() {
     error = '';
 
@@ -37,9 +41,9 @@
         password,
         password2: confirmPassword,
         role,
+        avatar: avatarFile || undefined,
       });
 
-      // Backend trả JWT ngay sau khi đăng ký thành công
       localStorage.setItem('access_token', data.access);
       localStorage.setItem('refresh_token', data.refresh);
 
@@ -50,7 +54,6 @@
     } catch (err) {
       const resErrors = err.response?.data;
       if (resErrors && typeof resErrors === 'object') {
-        // Django REST Framework thường trả lỗi dạng { field: ["thông báo lỗi"] }
         const firstKey = Object.keys(resErrors)[0];
         const firstMsg = Array.isArray(resErrors[firstKey])
           ? resErrors[firstKey][0]
@@ -63,11 +66,35 @@
       loading = false;
     }
   }
+
+  function handleAvatarChange(event) {
+    const file = event.target.files[0];
+    if (file) {
+      avatarFile = file;
+      avatarPreview = URL.createObjectURL(file);
+    }
+  }
 </script>
 
 <div class="register-container">
   <h2>Tạo tài khoản mới</h2>
-
+  <div class="register-avatar-upload">
+    <label for="avatar-input" class="avatar-upload-circle">
+      {#if avatarPreview}
+        <img src={avatarPreview} alt="Avatar preview" />
+      {:else}
+        <span class="avatar-upload-icon">📷</span>
+      {/if}
+    </label>
+    <input
+      id="avatar-input"
+      type="file"
+      accept="image/*"
+      on:change={handleAvatarChange}
+      hidden
+    />
+    <p class="avatar-upload-hint">Chọn ảnh đại diện (không bắt buộc)</p>
+  </div>
   <form on:submit|preventDefault={handleSubmit}>
     <div class="register-field">
       <label for="username">Tên đăng nhập</label>

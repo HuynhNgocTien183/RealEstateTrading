@@ -1,5 +1,5 @@
 <script>
-  import '../../styles/listingCart.css';
+  import '../../styles/listingCard.css';
 
   export let listing;
 
@@ -35,6 +35,10 @@
         <span>{listing.bedrooms} PN</span>
         <span>•</span>
         <span>{listing.bathrooms} WC</span>
+        {#if listing.favorites_count > 0}
+          <span>•</span>
+          <span class="card-favorites-count">❤ {listing.favorites_count}</span>
+        {/if}
       </div>
     </div>
   </div>

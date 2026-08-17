@@ -1,131 +1,176 @@
 <script>
-  import { onMount } from 'svelte';
-  import { getListingDetail } from '../lib/api/listings.js';
-  import { addFavorite } from '../lib/api/interactions.js';
-  import { authStore } from '../lib/stores/auth.js';
-  import PredictionForm from '../lib/components/PredictionForm.svelte';
-  import '../styles/listingDetail.css';
+  import { onMount } from "svelte";
+  import { getListingDetail } from "../lib/api/listings.js";
+  import {
+    addFavorite,
+    removeFavorite,
+    getFavorites,
+  } from "../lib/api/interactions.js";
+  import { authStore } from "../lib/stores/auth.js";
+  import PredictionForm from "../lib/components/PredictionForm.svelte";
+  import "../styles/listingDetail.css";
+  import "../styles/app.css";
 
   export let params = {};
 
   let listing = null;
   let loading = true;
-  let error = '';
+  let error = "";
   let activeImageIndex = 0;
-  let favoriteMessage = '';
-
-  let showContactBox = false;
-  let contactMessage = '';
-  let sendingMessage = false;
-  let sendMessageResult = '';
+  let favoriteMessage = "";
+  let isFavorited = false;
+  let favoriteId = null;
+  let favoriteLoading = false;
 
   function formatPrice(price) {
-    if (!price) return 'Thoả thuận';
+    if (!price) return "Thoả thuận";
     const num = Number(price);
     if (num >= 1_000_000_000) return `${(num / 1_000_000_000).toFixed(2)} tỷ`;
     if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(0)} triệu`;
-    return num.toLocaleString('vi-VN');
+    return num.toLocaleString("vi-VN");
   }
 
   function formatDate(dateStr) {
-    if (!dateStr) return '—';
+    if (!dateStr) return "—";
     const d = new Date(dateStr);
-    return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    return d.toLocaleDateString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
   }
 
   const propertyTypeLabels = {
-    house: 'Nhà phố',
-    apartment: 'Chung cư',
-    land: 'Đất nền',
-    villa: 'Biệt thự',
+    house: "Nhà phố",
+    apartment: "Chung cư",
+    land: "Đất nền",
+    villa: "Biệt thự",
   };
 
   const legalStatusLabels = {
-    'Have certificate': 'Đã có sổ',
-    'Sale contract': 'Hợp đồng mua bán',
-    'Pending': 'Đang chờ sổ',
+    "Have certificate": "Đã có sổ",
+    "Sale contract": "Hợp đồng mua bán",
+    Pending: "Đang chờ sổ",
   };
 
   const furnitureStateLabels = {
-    'Full': 'Đầy đủ nội thất',
-    'Basic': 'Nội thất cơ bản',
-    'None': 'Không nội thất',
+    Full: "Đầy đủ nội thất",
+    Basic: "Nội thất cơ bản",
+    None: "Không nội thất",
   };
 
   const statusLabels = {
-    available: 'Đang bán',
-    sold: 'Đã bán',
-    hidden: 'Đã ẩn',
+    available: "Đang bán",
+    sold: "Đã bán",
+    hidden: "Đã ẩn",
   };
 
   async function fetchDetail() {
     loading = true;
-    error = '';
+    error = "";
     try {
       listing = await getListingDetail(params.id);
       activeImageIndex = 0;
+      await checkFavoriteStatus();
     } catch (err) {
-      error = 'Không tải được thông tin bất động sản.';
+      error = "Không tải được thông tin bất động sản.";
       console.error(err);
     } finally {
       loading = false;
     }
   }
 
-  async function handleAddFavorite() {
-    if (!$authStore.isAuthenticated) {
-      favoriteMessage = 'Vui lòng đăng nhập để lưu tin yêu thích.';
-      return;
-    }
+  async function checkFavoriteStatus() {
+    if (!$authStore.isAuthenticated) return;
     try {
-      await addFavorite(listing.id);
-      favoriteMessage = 'Đã lưu vào danh sách yêu thích!';
+      const data = await getFavorites();
+      const favorites = Array.isArray(data) ? data : (data.results ?? []);
+      const found = favorites.find(
+        (f) => (f.listing_detail?.id ?? f.listing) === listing.id,
+      );
+      if (found) {
+        isFavorited = true;
+        favoriteId = found.id;
+      } else {
+        isFavorited = false;
+        favoriteId = null;
+      }
     } catch (err) {
-      favoriteMessage = 'Không thể lưu tin này (có thể đã lưu trước đó).';
+      console.error(err);
     }
   }
 
-  function toggleContactBox() {
+  async function handleToggleFavorite() {
     if (!$authStore.isAuthenticated) {
-      sendMessageResult = 'Vui lòng đăng nhập để liên hệ người bán.';
-      showContactBox = true;
+      favoriteMessage = "Vui lòng đăng nhập để lưu tin yêu thích.";
       return;
     }
-    showContactBox = !showContactBox;
-    sendMessageResult = '';
-  }
 
-  async function handleSendMessage() {
-    if (!contactMessage.trim()) return;
-    sendingMessage = true;
-    sendMessageResult = '';
+    favoriteLoading = true;
+    favoriteMessage = "";
     try {
-      await sendMessage({
-        receiver: listing.seller,
-        listing: listing.id,
-        content: contactMessage,
-      });
-      sendMessageResult = 'Đã gửi tin nhắn cho người bán!';
-      contactMessage = '';
+      if (isFavorited) {
+        await removeFavorite(favoriteId);
+        isFavorited = false;
+        favoriteId = null;
+        listing.favorites_count = Math.max(0, (listing.favorites_count ?? 1) - 1);
+        favoriteMessage = "Đã bỏ khỏi danh sách yêu thích.";
+      } else {
+        const created = await addFavorite(listing.id);
+        isFavorited = true;
+        favoriteId = created.id;
+        listing.favorites_count = (listing.favorites_count ?? 0) + 1;
+        favoriteMessage = "Đã lưu vào danh sách yêu thích!";
+      }
     } catch (err) {
-      sendMessageResult = 'Gửi tin nhắn thất bại. Vui lòng thử lại.';
+      favoriteMessage = "Thao tác thất bại. Vui lòng thử lại.";
       console.error(err);
     } finally {
-      sendingMessage = false;
+      favoriteLoading = false;
     }
   }
 
   function scrollToLocation() {
-    const el = document.getElementById('listing-location-section');
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const el = document.getElementById("listing-location-section");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   $: if (params.id) {
     fetchDetail();
   }
+
+  function extractLatLngFromMapsUrl(url) {
+    if (!url) return null;
+
+    const pinMatch = url.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+    if (pinMatch) {
+      return { lat: pinMatch[1], lng: pinMatch[2] };
+    }
+
+    const viewMatch = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (viewMatch) {
+      return { lat: viewMatch[1], lng: viewMatch[2] };
+    }
+
+    return null;
+  }
+
+  function getEmbedMapUrl(listing) {
+    const extracted = extractLatLngFromMapsUrl(listing.google_maps_url);
+    if (extracted) {
+      return `https://www.google.com/maps?q=${extracted.lat},${extracted.lng}&output=embed`;
+    }
+
+    if (listing.latitude && listing.longitude) {
+      return `https://www.google.com/maps?q=${listing.latitude},${listing.longitude}&output=embed`;
+    }
+
+    return null;
+  }
 </script>
 
 <div class="listing-detail">
+  <button class="btn-back" on:click={() => history.back()}> ← Quay lại </button>
   {#if loading}
     <div class="listing-detail-state">Đang tải thông tin...</div>
   {:else if error}
@@ -178,14 +223,17 @@
         </p>
 
         <div class="listing-detail-action-buttons">
-          <button class="btn-action btn-contact" on:click={toggleContactBox}>
-            💬 Liên hệ
-          </button>
           <button class="btn-action btn-location" on:click={scrollToLocation}>
             📍 Vị trí
           </button>
-          <button class="btn-action btn-favorite-inline" on:click={handleAddFavorite}>
-            ♡ Yêu thích
+          <button
+            class="btn-action btn-favorite-inline"
+            class:favorited={isFavorited}
+            disabled={favoriteLoading}
+            on:click={handleToggleFavorite}
+          >
+            {isFavorited ? "❤ Đã thích" : "♡ Yêu thích"}
+            <span class="favorite-count-badge">{listing.favorites_count ?? 0}</span>
           </button>
         </div>
 
@@ -223,29 +271,17 @@
           <div class="spec-item">
             <span class="spec-label">Loại hình</span>
             <span class="spec-value">
-              {propertyTypeLabels[listing.property_type] || listing.property_type}
+              {propertyTypeLabels[listing.property_type] ||
+                listing.property_type}
             </span>
           </div>
-
-          {#if listing.frontage}
-            <div class="spec-item">
-              <span class="spec-label">Mặt tiền</span>
-              <span class="spec-value">{listing.frontage} m</span>
-            </div>
-          {/if}
-
-          {#if listing.access_road}
-            <div class="spec-item">
-              <span class="spec-label">Đường vào</span>
-              <span class="spec-value">{listing.access_road} m</span>
-            </div>
-          {/if}
 
           {#if listing.legal_status}
             <div class="spec-item">
               <span class="spec-label">Pháp lý</span>
               <span class="spec-value">
-                {legalStatusLabels[listing.legal_status] || listing.legal_status}
+                {legalStatusLabels[listing.legal_status] ||
+                  listing.legal_status}
               </span>
             </div>
           {/if}
@@ -254,22 +290,9 @@
             <div class="spec-item">
               <span class="spec-label">Nội thất</span>
               <span class="spec-value">
-                {furnitureStateLabels[listing.furniture_state] || listing.furniture_state}
+                {furnitureStateLabels[listing.furniture_state] ||
+                  listing.furniture_state}
               </span>
-            </div>
-          {/if}
-
-          {#if listing.house_direction}
-            <div class="spec-item">
-              <span class="spec-label">Hướng nhà</span>
-              <span class="spec-value">{listing.house_direction}</span>
-            </div>
-          {/if}
-
-          {#if listing.balcony_direction}
-            <div class="spec-item">
-              <span class="spec-label">Hướng ban công</span>
-              <span class="spec-value">{listing.balcony_direction}</span>
             </div>
           {/if}
         </div>
@@ -296,23 +319,20 @@
           </div>
         </div>
 
-        <div id="listing-location-section" class="listing-detail-location-section">
+        <div
+          id="listing-location-section"
+          class="listing-detail-location-section"
+        >
           <h3>Vị trí bất động sản</h3>
-          {#if listing.latitude && listing.longitude}
+          {#if getEmbedMapUrl(listing)}
             <iframe
               title="Bản đồ vị trí"
               class="listing-detail-map-embed"
-              src={`https://www.google.com/maps?q=${listing.latitude},${listing.longitude}&output=embed`}
+              src={getEmbedMapUrl(listing)}
               loading="lazy"
             ></iframe>
           {:else}
-            <p class="no-map-hint">Chưa có toạ độ chính xác cho tin đăng này.</p>
-          {/if}
-
-          {#if listing.maps_link}
-            <a class="listing-detail-map-link" href={listing.maps_link} target="_blank" rel="noopener">
-              🗺️ Mở trong Google Maps
-            </a>
+            <p class="no-map-hint">Chưa có vị trí cho tin đăng này.</p>
           {/if}
         </div>
       </div>
@@ -321,10 +341,25 @@
       <div class="listing-detail-sidebar">
         <div class="listing-detail-contact-card">
           <h3>Người đăng tin</h3>
-          <p class="contact-username">{listing.seller_username || 'Ẩn danh'}</p>
-          <button class="btn-favorite">
-            💬 Liên hệ người bán
-          </button>
+          <p class="contact-username">
+            {listing.seller_full_name || listing.seller_username || "Ẩn danh"}
+          </p>
+          <p class="contact-phone">📞 {listing.seller_phone || "Không có"}</p>
+          <p class="contact-email">
+            ✉️
+            {#if listing.seller_email}
+              
+              <a  href={`https://mail.google.com/mail/?view=cm&fs=1&to=${listing.seller_email}`}
+                target="_blank"
+                rel="noopener"
+                class="contact-email-link"
+              >
+                {listing.seller_email}
+              </a>
+            {:else}
+              Không có
+            {/if}
+          </p>
         </div>
 
         <PredictionForm {listing} />

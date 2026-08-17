@@ -1,40 +1,300 @@
 .navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-md) var(--spacing-lg);
-  background: var(--color-white);
-  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid transparent;
+  transition: box-shadow 0.2s, border-color 0.2s;
 }
 
+.navbar.scrolled {
+  border-bottom-color: var(--color-border);
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
+}
+
+.navbar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Logo */
 .navbar-logo {
-  font-weight: 700;
-  font-size: 1.2rem;
-  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
   text-decoration: none;
 }
 
+.navbar-logo-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  color: white;
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: -0.02em;
+}
+
+.navbar-logo-text {
+  font-weight: 700;
+  font-size: 1.08rem;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+/* Links */
 .navbar-links {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
+  gap: 0.25rem;
 }
 
-.navbar-links a {
+.nav-link {
+  position: relative;
   text-decoration: none;
-  color: var(--color-text);
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.5rem 0.7rem;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s, background 0.15s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.nav-link:hover {
+  color: var(--color-primary);
+  background: rgba(37, 99, 235, 0.06);
+}
+
+.nav-link.active {
+  color: var(--color-primary);
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  left: 0.7rem;
+  right: 0.7rem;
+  bottom: 0.1rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--color-primary);
+}
+
+.nav-link-cta {
+  background: var(--color-primary);
+  color: white !important;
+}
+
+.nav-link-cta:hover {
+  background: var(--color-primary-dark);
+}
+
+/* Account dropdown (desktop) */
+.navbar-account {
+  position: relative;
+  margin-left: 0.4rem;
+}
+
+.navbar-avatar-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.6rem 0.3rem 0.3rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.navbar-avatar-btn:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+.navbar-avatar-img,
+.navbar-avatar-fallback {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.navbar-avatar-img {
+  object-fit: cover;
+}
+
+.navbar-avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 700;
 }
 
 .navbar-username {
-  color: var(--color-text-muted);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #0f172a;
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.navbar-logout-btn {
-  padding: 0.4rem 0.9rem;
-  background: var(--color-danger-dark);
-  color: var(--color-white);
+.navbar-caret {
+  color: var(--color-text-muted);
+  transition: transform 0.18s;
+}
+
+.navbar-caret.open {
+  transform: rotate(180deg);
+}
+
+.navbar-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 190px;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+  padding: 0.4rem;
+  animation: dropdownIn 0.14s ease-out;
+}
+
+@keyframes dropdownIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.55rem 0.7rem;
   border: none;
-  border-radius: var(--radius-sm);
+  background: none;
+  border-radius: 8px;
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: #0f172a;
   cursor: pointer;
+  font-family: inherit;
+}
+
+.dropdown-item:hover {
+  background: var(--color-bg-subtle);
+}
+
+.dropdown-item-danger {
+  color: var(--color-danger);
+}
+
+.dropdown-item-danger:hover {
+  background: rgba(220, 38, 38, 0.06);
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: 0.3rem 0;
+}
+
+/* Mobile burger */
+.navbar-burger {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0.4rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.navbar-burger span {
+  width: 20px;
+  height: 2px;
+  background: #0f172a;
+  border-radius: 2px;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.navbar-burger span.open:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+.navbar-burger span.open:nth-child(2) {
+  opacity: 0;
+}
+.navbar-burger span.open:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+.navbar-mobile-account {
+  display: none;
+}
+
+/* Responsive */
+@media (max-width: 720px) {
+  .navbar-burger {
+    display: flex;
+  }
+
+  .navbar-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.15rem;
+    background: white;
+    border-bottom: 1px solid var(--color-border);
+    padding: 0.6rem;
+    display: none;
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+  }
+
+  .navbar-links.mobile-open {
+    display: flex;
+  }
+
+  .nav-link {
+    width: 100%;
+  }
+
+  .navbar-account {
+    display: none;
+  }
+
+  .navbar-mobile-account {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    margin-top: 0.3rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .nav-link-logout {
+    color: var(--color-danger);
+    text-align: left;
+  }
 }

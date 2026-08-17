@@ -7,11 +7,7 @@ from .models import Favorite
 from .serializers import  FavoriteSerializer
 
 class FavoriteViewSet(viewsets.ModelViewSet):
-    """
-    API cho tin yêu thích.
-    - list: chỉ thấy tin yêu thích của chính mình
-    - create: tự gán user = user hiện tại
-    """
+
     serializer_class = FavoriteSerializer
     permission_classes = [permissions.IsAuthenticated]
 

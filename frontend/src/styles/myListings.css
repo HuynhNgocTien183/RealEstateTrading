@@ -54,8 +54,8 @@
 }
 
 .my-listing-image {
-  width: 160px;
-  height: 120px;
+  width: 200px;
+  height: 150px;
   flex-shrink: 0;
   border-radius: var(--radius-sm);
   overflow: hidden;

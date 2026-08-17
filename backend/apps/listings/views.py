@@ -119,7 +119,7 @@ class ListingViewSet(viewsets.ModelViewSet):
         """Danh sách bài đang chờ duyệt: GET /api/listings/pending/"""
         qs = Listing.objects.filter(approval_status=Listing.ApprovalStatus.PENDING)
         page = self.paginate_queryset(qs)
-        serializer = ListingSerializer(page or qs, many=True)
+        serializer = self.get_serializer(page or qs, many=True)
         if page is not None:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
@@ -131,7 +131,7 @@ class ListingViewSet(viewsets.ModelViewSet):
         """Seller xem toàn bộ tin đăng của chính mình (mọi trạng thái): GET /api/listings/my_listings/"""
         qs = Listing.objects.filter(seller=request.user)
         page = self.paginate_queryset(qs)
-        serializer = ListingSerializer(page or qs, many=True)
+        serializer = self.get_serializer(page or qs, many=True)  # ✅ Sửa thành self.get_serializer()
         if page is not None:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)

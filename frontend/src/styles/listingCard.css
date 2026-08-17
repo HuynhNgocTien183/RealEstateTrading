@@ -21,14 +21,14 @@
 
 .card-image-wrapper {
   position: relative;
-  aspect-ratio: 4 / 3;
+  height: 300px;              /* Cố định chiều cao tuyệt đối, không phụ thuộc chiều rộng card */
   background: var(--color-bg-muted);
 }
 
 .card-image-wrapper img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover;          /* Ảnh tự crop vừa khung, không méo */
 }
 
 .card-no-image {
@@ -90,4 +90,10 @@
   color: var(--color-text);
   font-size: 0.85rem;
   margin-top: auto;
+}
+
+
+.card-favorites-count {
+  color: var(--color-danger);
+  font-weight: 600;
 }

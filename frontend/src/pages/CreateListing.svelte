@@ -102,8 +102,8 @@
         await updateListing(params.id, payload);
         push(`/listings/${params.id}`);
       } else {
-        const listing = await createListing(payload, imageFiles);
-        push(`/listings/${listing.id}`);
+        await createListing(payload, imageFiles);
+        push('/my-listings');   // ← Đổi sang trang "Tin của tôi"
       }
     } catch (err) {
       const resErrors = err.response?.data;

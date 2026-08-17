@@ -138,13 +138,7 @@
   white-space: pre-line;
 }
 
-.listing-detail-map-link {
-  display: inline-block;
-  margin-top: var(--spacing-md);
-  color: var(--color-primary);
-  text-decoration: none;
-  font-weight: 600;
-}
+
 
 /* Sidebar */
 .listing-detail-sidebar {
@@ -253,23 +247,26 @@
   font-size: 0.88rem;
 }
 
-.btn-contact {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-}
-
-.btn-contact:hover {
-  background: rgba(37, 99, 235, 0.06);
-}
-
 .btn-location {
   border-color: var(--color-text-muted);
   color: var(--color-text);
 }
 
+
 .btn-favorite-inline {
   border-color: var(--color-danger);
   color: var(--color-danger);
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn-favorite-inline.favorited {
+  background: var(--color-danger);
+  color: var(--color-white);
+}
+
+.btn-favorite-inline:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .listing-detail-contact-box {
@@ -362,4 +359,33 @@
   cursor: pointer;
   flex-shrink: 0;
   display: block;
+}
+
+.contact-email-link {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.contact-email-link:hover {
+  text-decoration: underline;
+}
+
+.btn-favorite-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.favorite-count-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: rgba(220, 38, 38, 0.12);
+  color: var(--color-danger);
+}
+
+.btn-favorite-inline.favorited .favorite-count-badge {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
 }

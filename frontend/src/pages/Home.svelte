@@ -5,15 +5,19 @@
   import SearchBar from '../lib/components/SearchBar.svelte';
   import '../styles/home.css';
   import PredictionForm from '../lib/components/PredictionForm.svelte';
-  
+  import { homeState } from '../lib/stores/homeState.js';
+  import { get } from 'svelte/store';
   
   let listings = [];
   let loading = true;
   let error = '';
-  let currentPage = 1;
   let totalCount = 0;
-  let pageSize = 12;
-  let currentFilters = {};
+  let pageSize = 12; 
+  let currentPage = get(homeState).currentPage;
+  let currentFilters = get(homeState).filters;
+  let showPredictionForm = false;
+
+
 
   async function fetchListings(filters = {}, page = 1) {
     loading = true;
@@ -29,6 +33,8 @@
         listings = data.results ?? [];
         totalCount = data.count ?? listings.length;
       }
+
+      homeState.set({ currentPage: page, filters });
     } catch (err) {
       error = 'Không tải được danh sách bất động sản. Vui lòng thử lại.';
       console.error(err);
@@ -52,15 +58,29 @@
   $: totalPages = Math.ceil(totalCount / pageSize) || 1;
 
   onMount(() => {
-    fetchListings();
+    fetchListings(currentFilters, currentPage);
   });
 </script>
 
 <div class="home">
   <h1>Tìm kiếm Bất động sản</h1>
 
-  <SearchBar on:filter={handleFilter} />
-  <PredictionForm />
+  <SearchBar initialFilters={currentFilters} on:filter={handleFilter} />
+  <div class="home-prediction-toggle-wrapper">
+    <button
+      class="home-prediction-toggle-btn"
+      on:click={() => (showPredictionForm = !showPredictionForm)}
+    >
+      <span>🤖 Dùng AI dự đoán giá nhà</span>
+      <span class="toggle-arrow" class:open={showPredictionForm}>▼</span>
+    </button>
+
+    {#if showPredictionForm}
+      <div class="home-prediction-form-panel">
+        <PredictionForm />
+      </div>
+    {/if}
+  </div>
 
   {#if loading}
     <div class="home-state-message">Đang tải danh sách...</div>

@@ -6,8 +6,17 @@ export async function login(username, password) {
 }
 
 export async function register(userData) {
-  const res = await client.post('/users/register/', userData);
-  return res.data; // trả JWT ngay sau khi đăng ký: { access, refresh, user? }
+  const formData = new FormData();
+  Object.entries(userData).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      formData.append(key, value);
+    }
+  });
+
+  const res = await client.post('/users/register/', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return res.data;
 }
 
 
