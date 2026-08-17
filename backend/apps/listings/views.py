@@ -135,3 +135,46 @@ class ListingViewSet(viewsets.ModelViewSet):
         if page is not None:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def upload_images(self, request, pk=None):
+        """Thêm ảnh mới vào tin đã có: POST /api/listings/{id}/upload_images/"""
+        listing = self.get_object()
+        if listing.seller != request.user and not request.user.is_staff:
+            return Response({"detail": "Không có quyền."}, status=403)
+
+        images = request.FILES.getlist('images')
+        if not images:
+            return Response({"detail": "Không có ảnh nào được gửi lên."}, status=400)
+
+        has_primary = listing.images.filter(is_primary=True).exists()
+        for i, image_file in enumerate(images):
+            ListingImage.objects.create(
+                listing=listing,
+                image=image_file,
+                is_primary=(not has_primary and i == 0),
+            )
+        serializer = self.get_serializer(listing)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['delete'], url_path='images/(?P<image_id>[^/.]+)',
+            permission_classes=[permissions.IsAuthenticated])
+    def delete_image(self, request, pk=None, image_id=None):
+        """Xoá 1 ảnh cụ thể: DELETE /api/listings/{id}/images/{image_id}/"""
+        listing = self.get_object()
+        if listing.seller != request.user and not request.user.is_staff:
+            return Response({"detail": "Không có quyền."}, status=403)
+
+        try:
+            image = listing.images.get(id=image_id)
+            was_primary = image.is_primary
+            image.delete()
+            if was_primary:
+                next_image = listing.images.first()
+                if next_image:
+                    next_image.is_primary = True
+                    next_image.save(update_fields=['is_primary'])
+        except ListingImage.DoesNotExist:
+            return Response({"detail": "Không tìm thấy ảnh."}, status=404)
+
+        return Response({"detail": "Đã xoá ảnh."})

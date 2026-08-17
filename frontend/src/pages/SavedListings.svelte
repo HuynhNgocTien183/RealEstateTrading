@@ -44,11 +44,11 @@
   {:else if error}
     <div class="saved-listings-state error">{error}</div>
   {:else if favorites.length === 0}
-    <div class="saved-listings-state">Bạn chưa lưu tin nào.</div>
+    <div class="saved-listings-state">Bạn chưa thích tin nào.</div>
   {:else}
     <div class="saved-listings-grid">
       {#each favorites as fav (fav.id)}
-        <div class="saved-listing-item">
+        <div class="saved-listing-item", style=margin-bottom:30px >
           <ListingCard listing={fav.listing_detail} />
           <button class="btn-remove-favorite" on:click={() => handleRemove(fav.id)}>
             ✕ Bỏ thích

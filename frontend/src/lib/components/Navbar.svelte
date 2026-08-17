@@ -8,6 +8,7 @@
   let scrolled = false;
   let dropdownOpen = false;
   let mobileMenuOpen = false;
+  let logoImageFailed = false;
 
   function handleScroll() {
     scrolled = window.scrollY > 8;
@@ -54,7 +55,16 @@
 <nav class="navbar" class:scrolled>
   <div class="navbar-inner">
     <a href="#/" class="navbar-logo">
-      <span class="navbar-logo-mark">R</span>
+      {#if !logoImageFailed}
+        <img
+          class="navbar-logo-mark-img"
+          src="logo.png"
+          alt="RealEstateTrading"
+          on:error={() => (logoImageFailed = true)}
+        />
+      {:else}
+        <span class="navbar-logo-mark">R</span>
+      {/if}
       <span class="navbar-logo-text">RealEstateTrading</span>
     </a>
 

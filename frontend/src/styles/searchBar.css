@@ -1,40 +1,112 @@
 .filter-bar {
   display: flex;
-  gap: var(--spacing-sm);
+  gap: 0.6rem;
   flex-wrap: wrap;
-  padding: var(--spacing-md);
-  background: var(--color-bg-subtle);
-  border-radius: var(--radius-md);
+  align-items: center;
+  padding: 1rem 1.1rem;
+  background: linear-gradient(160deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
   margin-bottom: var(--spacing-lg);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
 .filter-bar input,
 .filter-bar select {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--color-border-input);
-  border-radius: var(--radius-sm);
-  font-size: 0.9rem;
+  padding: 0.62rem 0.8rem;
+  border: 1.5px solid var(--color-border-input);
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #0f172a;
+  background: #fbfcfe;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  font-family: inherit;
 }
 
+.filter-bar input::placeholder {
+  color: #94a3b8;
+}
+
+.filter-bar input:hover,
+.filter-bar select:hover {
+  border-color: #cbd5e1;
+}
+
+.filter-bar input:focus,
+.filter-bar select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background: white;
+  box-shadow: 0 0 0 3.5px rgba(37, 99, 235, 0.12);
+}
+
+.filter-bar select {
+  appearance: none;
+  padding-right: 2rem;
+  cursor: pointer;
+}
+
+/* Ô tìm kiếm chính — nổi bật hơn, có icon kính lúp */
 .filter-search-input {
   flex: 2;
-  min-width: 200px;
+  min-width: 220px;
+  padding-left: 2.3rem;
+}
+
+.filter-bar select {
+  min-width: 130px;
 }
 
 .filter-price-input {
-  width: 110px;
+  width: 130px;
 }
 
+/* Nút tìm kiếm */
 .filter-search-btn {
-  padding: 0.5rem 1.25rem;
-  background: var(--color-primary);
-  color: var(--color-white);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1.4rem;
+  background: linear-gradient(135deg, var(--color-primary), #4f46e5);
+  color: white;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: 10px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 0.88rem;
+  transition: transform 0.12s, box-shadow 0.12s;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  white-space: nowrap;
 }
 
 .filter-search-btn:hover {
-  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.32);
+}
+
+.filter-search-btn:active {
+  transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .filter-bar {
+    padding: 0.85rem;
+  }
+
+  .filter-search-input {
+    min-width: 100%;
+    order: -1;
+  }
+
+  .filter-price-input {
+    width: calc(50% - 0.3rem);
+  }
+
+  .filter-search-btn {
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.2rem;
+  }
 }

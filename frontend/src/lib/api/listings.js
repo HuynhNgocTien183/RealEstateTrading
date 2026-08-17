@@ -61,3 +61,16 @@ export async function getRejectedListings() {
   const res = await client.get('/listings/rejected/');
   return res.data;
 }
+
+export async function uploadListingImages(id, imageFiles) {
+  const formData = new FormData();
+  imageFiles.forEach((file) => formData.append('images', file));
+  const res = await client.post(`/listings/${id}/upload_images/`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return res.data;
+}
+
+export async function deleteListingImage(listingId, imageId) {
+  return client.delete(`/listings/${listingId}/images/${imageId}/`);
+}

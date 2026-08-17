@@ -63,7 +63,7 @@
 </script>
 
 <div class="home">
-  <h1>Tìm kiếm Bất động sản</h1>
+  <h2>Tìm kiếm Bất động sản</h2>
 
   <SearchBar initialFilters={currentFilters} on:filter={handleFilter} />
   <div class="home-prediction-toggle-wrapper">
@@ -82,6 +82,7 @@
     {/if}
   </div>
 
+  <h2>Bài đăng mới</h2>
   {#if loading}
     <div class="home-state-message">Đang tải danh sách...</div>
   {:else if error}

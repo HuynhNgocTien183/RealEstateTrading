@@ -1,9 +1,10 @@
 <script>
   import { onMount } from 'svelte';
   import { push } from 'svelte-spa-router';
-  import { createListing, updateListing, getListingDetail } from '../lib/api/listings.js';
+  import { createListing, updateListing, getListingDetail, uploadListingImages, deleteListingImage } from '../lib/api/listings.js';
   import { authStore } from '../lib/stores/auth.js';
   import '../styles/createListing.css';
+    import App from '../App.svelte';
 
   export let params = {};
   $: isEditMode = !!params.id;
@@ -28,6 +29,8 @@
   let error = '';
   let loading = false;
   let loadingExisting = false;
+  let deletingImageId = null;
+  let uploadingImages = false;
 
   const districtOptions = [
     'Quận 1', 'Quận 3', 'Quận 4', 'Quận 5', 'Quận 6', 'Quận 7',
@@ -73,6 +76,36 @@
     imagePreviews = imagePreviews.filter((_, i) => i !== index);
   }
 
+  async function handleDeleteExistingImage(imageId) {
+    if (!confirm('Bạn muốn xoá ảnh này?')) return;
+    deletingImageId = imageId;
+    try {
+      await deleteListingImage(params.id, imageId);
+      existingImages = existingImages.filter((img) => img.id !== imageId);
+    } catch (err) {
+      alert('Xoá ảnh thất bại. Vui lòng thử lại.');
+      console.error(err);
+    } finally {
+      deletingImageId = null;
+    }
+  }
+
+  async function handleUploadNewImages() {
+    if (imageFiles.length === 0) return;
+    uploadingImages = true;
+    try {
+      const updated = await uploadListingImages(params.id, imageFiles);
+      existingImages = updated.images || [];
+      imageFiles = [];
+      imagePreviews = [];
+    } catch (err) {
+      error = 'Tải ảnh mới thất bại.';
+      console.error(err);
+    } finally {
+      uploadingImages = false;
+    }
+  }
+
   async function handleSubmit() {
     error = '';
 
@@ -103,7 +136,7 @@
         push(`/listings/${params.id}`);
       } else {
         await createListing(payload, imageFiles);
-        push('/my-listings');   // ← Đổi sang trang "Tin của tôi"
+        push('/my-listings');
       }
     } catch (err) {
       const resErrors = err.response?.data;
@@ -232,13 +265,51 @@
           {#if isEditMode}
             {#if existingImages.length > 0}
               <div class="image-preview-grid">
-                {#each existingImages as img}
+                {#each existingImages as img (img.id)}
                   <div class="image-preview-item">
                     <img src={img.image} alt="Ảnh hiện có" />
+                    {#if img.is_primary}
+                      <span class="primary-badge">Đại diện</span>
+                    {/if}
+                    <button
+                      type="button"
+                      class="remove-image-btn"
+                      disabled={deletingImageId === img.id}
+                      on:click={() => handleDeleteExistingImage(img.id)}
+                    >
+                      ✕
+                    </button>
                   </div>
                 {/each}
               </div>
-              <p class="edit-image-hint">Ảnh hiện tại không thể chỉnh sửa trong form này.</p>
+            {:else}
+              <p class="edit-image-hint">Tin này chưa có ảnh nào.</p>
+            {/if}
+
+            <label class="image-upload-label">
+              <input type="file" accept="image/*" multiple on:change={handleImageChange} />
+              <span>📷 Thêm ảnh mới</span>
+            </label>
+
+            {#if imagePreviews.length > 0}
+              <div class="image-preview-grid">
+                {#each imagePreviews as src, i}
+                  <div class="image-preview-item">
+                    <img {src} alt="Ảnh mới {i + 1}" />
+                    <button type="button" class="remove-image-btn" on:click={() => removeImage(i)}>
+                      ✕
+                    </button>
+                  </div>
+                {/each}
+              </div>
+              <button
+                type="button"
+                class="btn-upload-images"
+                on:click={handleUploadNewImages}
+                disabled={uploadingImages}
+              >
+                {uploadingImages ? 'Đang tải lên...' : `Tải ${imageFiles.length} ảnh mới lên ngay`}
+              </button>
             {/if}
           {:else}
             <label class="image-upload-label">

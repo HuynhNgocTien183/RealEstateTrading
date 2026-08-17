@@ -167,20 +167,30 @@ Model sau khi train sẽ được lưu vào `ml/models/`, backend (`apps/predict
 
 ---
 
-## 📡 API Endpoints (dự kiến)
+## 📡 API Endpoints
 
-| Method | Endpoint | Mô tả |
-|---|---|---|
-| POST | `/api/auth/register/` | Đăng ký tài khoản |
-| POST | `/api/auth/login/` | Đăng nhập, trả về JWT |
-| GET | `/api/listings/` | Lấy danh sách tin đăng |
-| POST | `/api/listings/` | Tạo tin đăng mới |
-| GET | `/api/listings/{id}/` | Xem chi tiết tin đăng |
-| PUT/PATCH | `/api/listings/{id}/` | Cập nhật tin đăng |
-| DELETE | `/api/listings/{id}/` | Xoá tin đăng |
-| POST | `/api/predictions/` | Dự đoán giá nhà dựa trên input |
-| GET | `/api/interactions/messages/` | Lấy tin nhắn/tương tác |
-| POST | `/api/interactions/messages/` | Gửi tin nhắn/liên hệ |
+| STT | Phân hệ (Module) | Method | Endpoint | Quyền truy cập | Mô tả chi tiết |
+| --- | --- | --- | --- | --- | --- |
+| 1 | **Authentication** | `POST` | `/api/token/` | Public | Đăng nhập, lấy access + refresh token |
+| 2 | **Authentication** | `POST` | `/api/token/refresh/` | Public | Làm mới access token bằng refresh token |
+| 3 | **App users** | `POST` | `/api/users/register/` | Public | Đăng ký tài khoản mới, trả về JWT |
+| 4 | **App users** | `GET` | `/api/users/me/` | Đã đăng nhập | Xem thông tin tài khoản hiện tại |
+| 5 | **App users** | `POST` | `/api/users/logout/` | Đã đăng nhập | Đăng xuất (blacklist refresh token) |
+| 6 | **App listings** | `GET` | `/api/listings/` | Public (theo phạm vi) | Danh sách tin đăng — khách chỉ thấy bài đã duyệt & đang bán |
+| 7 | **App listings** | `POST` | `/api/listings/` | Đã đăng nhập | Tạo tin đăng mới (mặc định pending, chờ duyệt) |
+| 8 | **App listings** | `GET` | `/api/listings/{id}/` | Public (theo phạm vi) | Xem chi tiết 1 tin đăng |
+| 9 | **App listings** | `PUT` / `PATCH` | `/api/listings/{id}/` | Chủ tin hoặc admin | Cập nhật tin đăng |
+| 10 | **App listings** | `DELETE` | `/api/listings/{id}/` | Chủ tin hoặc admin | Xoá tin đăng |
+| 11 | **App listings** | `GET` | `/api/listings/my_listings/` | Đã đăng nhập | Seller xem toàn bộ tin của chính mình (mọi trạng thái) |
+| 12 | **App listings** | `GET` | `/api/listings/pending/` | Admin | Danh sách tin đang chờ duyệt |
+| 13 | **App listings** | `POST` | `/api/listings/{id}/approve/` | Admin | Duyệt tin đăng |
+| 14 | **App listings** | `POST` | `/api/listings/{id}/reject/` | Admin | Từ chối tin đăng (kèm reason) |
+| 15 | **App predictions** | `POST` | `/api/predictions/predict/` | Public | Nhập thông tin BĐS, nhận giá dự đoán từ AI |
+| 16 | **App predictions** | `GET` | `/api/predictions/history/` | Đã đăng nhập | Xem lịch sử các lần đã dự đoán của mình |
+| 17 | **App interactions** | `GET` | `/api/interactions/favorites/` | Đã đăng nhập | Danh sách tin yêu thích của mình |
+| 18 | **App interactions** | `POST` | `/api/interactions/favorites/` | Đã đăng nhập | Thêm 1 tin vào yêu thích |
+| 19 | **App interactions** | `DELETE` | `/api/interactions/favorites/{id}/` | Đã đăng nhập | Bỏ yêu thích |
+| 20 | **Django Admin** | `URL` | `/admin/` | Admin | Trang quản trị |
 
 
 Hết.
