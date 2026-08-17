@@ -3,14 +3,14 @@
 .venv/
 venv/
 
+.idea/
+.vscode/
+
 node_modules/
 dist/
 build/
 
 ml/data/raw/*
-ml/data/processed/*
-!ml/data/raw/.gitkeep
-!ml/data/processed/.gitkeep
 *.ipynb_checkpoints/
 
 .env
