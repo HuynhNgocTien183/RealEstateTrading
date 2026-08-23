@@ -1,0 +1,98 @@
+.prediction-history-page {
+  padding: 1rem 0 3rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.prediction-history-page h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 1.3rem;
+}
+
+.ph-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--color-text-muted);
+}
+
+.ph-state.error {
+  color: var(--color-danger);
+}
+
+.ph-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ph-card {
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 1.2rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.ph-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.9rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.ph-price {
+  font-size: 1.3rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--color-primary), #45aee3);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ph-date {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.ph-inputs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.7rem;
+  margin-bottom: 0.7rem;
+}
+
+.ph-input-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.ph-input-label {
+  font-size: 0.7rem;
+  color: #7f95b3;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.ph-input-value {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #334155;
+   white-space: nowrap;
+}
+
+.ph-model-tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  color: #94a3b8;
+  background: #f8fafc;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-weight: 600;
+}

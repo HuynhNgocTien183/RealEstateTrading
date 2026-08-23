@@ -19,5 +19,7 @@ class PredictionRequestSerializer(serializers.Serializer):
 class PredictionLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = PredictionLog
-        fields = '__all__'
-        read_only_fields = ('id', 'user', 'created_at', 'predicted_price', 'model_version')
+        fields = (
+            'id', 'input_data', 'predicted_price', 'model_version', 'created_at',
+        )
+        read_only_fields = fields

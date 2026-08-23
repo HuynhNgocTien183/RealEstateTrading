@@ -98,6 +98,9 @@
         <a href="#/saved-listings" use:active class="nav-link" on:click={() => (mobileMenuOpen = false)}>
           Yêu thích
         </a>
+        <a href="#/prediction-history" use:active class="nav-link" on:click={() => (mobileMenuOpen = false)}>
+          Lịch sử định giá
+        </a>
 
         <div class="navbar-mobile-account">
           <a href="#/profile" class="nav-link" on:click={() => (mobileMenuOpen = false)}>Hồ sơ</a>

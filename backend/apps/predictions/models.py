@@ -18,7 +18,7 @@ class PredictionLog(models.Model):
     input_bedrooms = models.PositiveSmallIntegerField()
     input_bathrooms = models.PositiveSmallIntegerField()
     input_property_type = models.CharField(max_length=20)
-
+    input_data = models.JSONField(default=dict, blank=True)
     predicted_price = models.DecimalField(max_digits=15, decimal_places=2)
     model_version = models.CharField(max_length=50, default='dummy-v0')
 

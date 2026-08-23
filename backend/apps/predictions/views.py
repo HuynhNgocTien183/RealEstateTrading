@@ -49,6 +49,18 @@ class PredictPriceView(APIView):
             input_bedrooms=data['bedrooms'],
             input_bathrooms=data['bathrooms'],
             input_property_type=data.get('property_type', ''),
+            input_data={
+                'area': str(data.get('area', '')),
+                'frontage': str(data.get('frontage', '')) if data.get('frontage') else None,
+                'access_road': str(data.get('access_road', '')) if data.get('access_road') else None,
+                'floors': data.get('floors'),
+                'bedrooms': data.get('bedrooms'),
+                'bathrooms': data.get('bathrooms'),
+                'legal_status': data.get('legal_status'),
+                'furniture_state': data.get('furniture_state'),
+                'city': data.get('city'),
+                'district': data.get('district'),
+            },
             predicted_price=predicted_price,
             model_version=model_version,
         )
