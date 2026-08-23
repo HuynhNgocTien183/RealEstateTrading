@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { getMyListings, deleteListing } from '../lib/api/listings.js';
   import { authStore } from '../lib/stores/auth.js';
+  import { CalendarClock, MapPin, CornerUpRight, Eye, CircleX, Edit, Trash2 } from '@lucide/svelte';
   import '../styles/myListings.css';
 
   let listings = [];
@@ -114,30 +115,30 @@
               </div>
 
               <p class="my-listing-meta">
-                📍 {listing.district}, {listing.city} &nbsp;•&nbsp;
-                🕒 Đăng ngày {formatDate(listing.created_at)} &nbsp;•&nbsp;
-                👁 {listing.views_count ?? 0} lượt xem
+                <MapPin size={16} color="#0d2c54" strokeWidth={2.25} /> {listing.district}, {listing.city} &nbsp;•&nbsp;
+                <CalendarClock size={16} color="#0d2c54" strokeWidth={2.25} /> Đăng ngày {formatDate(listing.created_at)} &nbsp;•&nbsp;
+                <Eye size={16} color="#0d2c54" strokeWidth={2.25} /> {listing.views_count ?? 0} lượt xem
               </p>
 
               {#if listing.approval_status === 'rejected' && listing.rejection_reason}
                 <p class="my-listing-rejection-reason">
-                  ❌ Lý do từ chối: {listing.rejection_reason}
+                  <CircleX size={16} color="#ff0a0a" strokeWidth={2.25} /> Lý do từ chối: {listing.rejection_reason}
                 </p>
               {/if}
 
               <div class="my-listing-actions">
                 <a class="btn-action-link" href={`#/listings/${listing.id}`} target="_blank" rel="noopener">
-                  Xem chi tiết ↗
+                  Xem chi tiết <CornerUpRight size={16} color="#121212" strokeWidth={2.25} />
                 </a>
                 <a class="btn-action-link" href={`#/edit-listing/${listing.id}`}>
-                  ✎ Sửa
+                  <Edit size={16} color="#0d2c54" strokeWidth={2.25} /> Sửa
                 </a>
                 <button
                   class="btn-delete"
                   disabled={deletingId === listing.id}
                   on:click={() => handleDelete(listing)}
                 >
-                  {deletingId === listing.id ? 'Đang xoá...' : '🗑 Xoá'}
+                <Trash2 size={16} color="#dc2926" strokeWidth={2.25} /> {deletingId === listing.id ? 'Đang xoá...' : ' Xoá'}
                 </button>
               </div>
             </div>

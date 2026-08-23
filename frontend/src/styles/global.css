@@ -24,3 +24,8 @@ textarea {
   font-family: inherit;
   font-size: inherit;
 }
+
+
+svg {
+  vertical-align: -3px;
+}

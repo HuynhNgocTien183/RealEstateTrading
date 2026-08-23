@@ -8,6 +8,7 @@
   } from "../lib/api/interactions.js";
   import { authStore } from "../lib/stores/auth.js";
   import PredictionForm from "../lib/components/PredictionForm.svelte";
+  import { Heart, X, MapPin, ArrowLeft, Camera, Phone, Mail} from '@lucide/svelte';
   import "../styles/listingDetail.css";
   import "../styles/app.css";
 
@@ -25,9 +26,9 @@
   function formatPrice(price) {
     if (!price) return "Thoả thuận";
     const num = Number(price);
-    if (num >= 1_000_000_000) return `${(num / 1_000_000_000).toFixed(2)} tỷ`;
-    if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(0)} triệu`;
-    return num.toLocaleString("vi-VN");
+    if (num >= 1_000_000_000) return `${(num / 1_000_000_000).toFixed(2)} Tỷ VND`;
+    if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(0)} Triệu VND`;
+    return num.toLocaleString("vi-VN") + " VND";
   }
 
   function formatDate(dateStr) {
@@ -167,17 +168,23 @@
 
     return null;
   }
+
+  function getZaloLink(phone) {
+    if (!phone) return null;
+    const cleanedPhone = phone.replace(/[\s\-().]/g, '');
+    return `https://zalo.me/${cleanedPhone}`;
+  }
 </script>
 
 <div class="listing-detail">
-  <button class="btn-back" on:click={() => history.back()}> ← Quay lại </button>
+  <button class="btn-back" on:click={() => history.back()}> <ArrowLeft size={16} /> </button>
   {#if loading}
     <div class="listing-detail-state">Đang tải thông tin...</div>
   {:else if error}
     <div class="listing-detail-state error">{error}</div>
   {:else if listing}
     <div class="listing-detail-grid">
-      <!-- Cột trái -->
+      <!-- div trái -->
       <div class="listing-detail-main">
         <div class="listing-detail-gallery">
           {#if listing.images && listing.images.length > 0}
@@ -219,12 +226,12 @@
         </div>
 
         <p class="listing-detail-location">
-          📍 {listing.address}, {listing.district}, {listing.city}
+          <MapPin size={16} /> {listing.address}, {listing.district}, {listing.city}
         </p>
 
         <div class="listing-detail-action-buttons">
           <button class="btn-action btn-location" on:click={scrollToLocation}>
-            📍 Vị trí
+            <MapPin size={16} /> Vị trí
           </button>
           <button
             class="btn-action btn-favorite-inline"
@@ -232,7 +239,7 @@
             disabled={favoriteLoading}
             on:click={handleToggleFavorite}
           >
-            {isFavorited ? "❤ Đã thích" : "♡ Yêu thích"}
+            <Heart size={16} fill={isFavorited ? 'currentColor' : 'none'} /> {isFavorited ? 'Đã thích' : 'Yêu thích'}
             <span class="favorite-count-badge">{listing.favorites_count ?? 0}</span>
           </button>
         </div>
@@ -337,16 +344,46 @@
         </div>
       </div>
 
-      <!-- Cột phải -->
+      <!-- div bên phải -->
       <div class="listing-detail-sidebar">
         <div class="listing-detail-contact-card">
           <h3>Người đăng tin</h3>
-          <p class="contact-username">
-            {listing.seller_full_name || listing.seller_username || "Ẩn danh"}
+          <div class="seller-info-row">
+            {#if listing.seller_avatar}
+              <img class="seller-avatar" src={listing.seller_avatar} alt={listing.seller_username} />
+            {:else}
+              <div class="seller-avatar-placeholder">
+                {(listing.seller_full_name || listing.seller_username)?.charAt(0)?.toUpperCase() || "?"}
+              </div>
+            {/if}
+            <div class="seller-info-text">
+              <p class="contact-username">
+                {listing.seller_full_name || listing.seller_username || "Ẩn danh"}
+              </p>
+              <a href={`#/seller/${listing.seller}/listings`} class="seller-view-all-link">
+                Xem tất cả tin đăng
+              </a>
+            </div>
+          </div>
+
+          <p class="contact-phone">
+            <Phone size={16} color="#ec3636" />
+            {#if listing.seller_phone}
+              <a
+                href={getZaloLink(listing.seller_phone)}
+                target="_blank"
+                rel="noopener"
+                class="contact-phone-link"
+              >
+                {listing.seller_phone}
+              </a>
+            {:else}
+              Không có
+            {/if}
           </p>
-          <p class="contact-phone">📞 {listing.seller_phone || "Không có"}</p>
+
           <p class="contact-email">
-            ✉️
+            <Mail size={16} color="#ec3636" />
             {#if listing.seller_email}
               
               <a  href={`https://mail.google.com/mail/?view=cm&fs=1&to=${listing.seller_email}`}
@@ -360,6 +397,20 @@
               Không có
             {/if}
           </p>
+
+          {#if listing.seller_phone}
+            <a
+              href={getZaloLink(listing.seller_phone)}
+              target="_blank"
+              rel="noopener"
+              class="btn-zalo-chat"
+            >
+              <span class="zalo-icon-badge">
+                <img src="https://cdn.simpleicons.org/zalo/ffffff" alt="Zalo" width="18" height="18" />
+              </span>
+              Chat qua Zalo
+            </a>
+          {/if}
         </div>
 
         <PredictionForm {listing} />

@@ -1,0 +1,36 @@
+.seller-listings-page {
+  padding: 1rem 0 3rem;
+}
+
+.seller-listings-page h1 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 1.3rem;
+}
+
+.seller-name-highlight {
+  color: var(--color-primary);
+}
+
+.seller-listings-count {
+  color: var(--color-text-muted);
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.seller-listings-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--color-text-muted);
+}
+
+.seller-listings-state.error {
+  color: var(--color-danger);
+}
+
+.seller-listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.25rem;
+}

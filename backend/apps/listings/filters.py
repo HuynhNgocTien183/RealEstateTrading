@@ -8,4 +8,4 @@ class ListingFilter(django_filters.FilterSet):
 
     class Meta:
         model = Listing
-        fields = ['property_type', 'district', 'status', 'bedrooms']
+        fields = ['property_type', 'district', 'status', 'bedrooms','seller']

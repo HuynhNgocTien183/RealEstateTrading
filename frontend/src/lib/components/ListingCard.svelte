@@ -4,9 +4,11 @@
   export let listing;
 
   function formatPrice(price) {
-    if (!price) return 'Thoả thuận';
+    if (!price) return "Thoả thuận";
     const num = Number(price);
-    return `${num.toFixed(0)} VND`;
+    if (num >= 1_000_000_000) return `${(num / 1_000_000_000).toFixed(2)} Tỷ VND`;
+    if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(0)} Triệu VND`;
+    return num.toLocaleString("vi-VN") + " VND";
   }
 
   $: primaryImage = listing.images?.find((img) => img.is_primary)?.image

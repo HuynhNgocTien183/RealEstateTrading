@@ -1,13 +1,9 @@
 <script>
   import { onMount } from 'svelte';
-  import {
-    getPendingListings,
-    getRejectedListings,
-    approveListing,
-    rejectListing,
-  } from '../lib/api/listings.js';
+  import { getPendingListings, getRejectedListings, approveListing, rejectListing } from '../lib/api/listings.js';
   import { authStore } from '../lib/stores/auth.js';
   import '../styles/adminReview.css';
+  import { CalendarClock, MapPin, UserRoundArrowLeft, CircleX, CornerUpRight, RotateCcw } from '@lucide/svelte';
 
   let activeTab = 'pending'; // 'pending' | 'rejected'
 
@@ -146,7 +142,7 @@
       <div class="admin-review-state error">{error}</div>
     {:else if currentList.length === 0}
       <div class="admin-review-state">
-        {activeTab === 'pending' ? '🎉 Không có tin nào đang chờ duyệt.' : 'Không có tin nào bị từ chối.'}
+        {activeTab === 'pending' ? 'Không có tin nào đang chờ duyệt.' : 'Không có tin nào bị từ chối.'}
       </div>
     {:else}
       <div class="admin-review-list">
@@ -167,19 +163,21 @@
               </div>
 
               <p class="admin-review-meta">
-                👤 {listing.seller_username} &nbsp;•&nbsp;
-                📍 {listing.district}, {listing.city} &nbsp;•&nbsp;
-                🕒 {formatDate(listing.created_at)}
+                <UserRoundArrowLeft size={16} color="#0d2c54" strokeWidth={2.25} /> {listing.seller_username}   
+                   &nbsp;•&nbsp;
+                <MapPin size={16} color="#0d2c54" strokeWidth={2.25} /> {listing.district}, {listing.city}  
+                   &nbsp;•&nbsp;
+                <CalendarClock size={16} color="#0d2c54" strokeWidth={2.25} /> {formatDate(listing.created_at)}
               </p>
 
               <p class="admin-review-specs">
-                {listing.area} m² • {listing.bedrooms} PN • {listing.bathrooms} WC •
+                {listing.area} m² &nbsp;•&nbsp; {listing.bedrooms} PN &nbsp;•&nbsp; {listing.bathrooms} WC &nbsp;•&nbsp; {listing.floors} tầng &nbsp;•&nbsp;
                 {listing.property_type}
               </p>
 
               {#if activeTab === 'rejected' && listing.rejection_reason}
                 <p class="admin-review-rejection-reason">
-                  ❌ Lý do từ chối: {listing.rejection_reason}
+                  <CircleX size={16} color="#ff0a0a" strokeWidth={2.25} /> Lý do từ chối: {listing.rejection_reason}
                 </p>
               {/if}
 
@@ -194,7 +192,7 @@
                   target="_blank"
                   rel="noopener"
                 >
-                  Xem chi tiết ↗
+                  Xem chi tiết <CornerUpRight size={16} color="#121212" strokeWidth={2.25} />
                 </a>
 
                 {#if activeTab === 'pending'}
@@ -203,14 +201,14 @@
                     disabled={actionLoadingId === listing.id}
                     on:click={() => handleApprove(listing, 'pending')}
                   >
-                    {actionLoadingId === listing.id ? 'Đang xử lý...' : '✓ Duyệt'}
+                    <RotateCcw size={16} color="#ffffff" strokeWidth={2.25} /> {actionLoadingId === listing.id ? 'Đang xử lý...' : 'Duyệt'}
                   </button>
                   <button
                     class="btn-reject"
                     disabled={actionLoadingId === listing.id}
                     on:click={() => openRejectModal(listing)}
                   >
-                    ✕ Từ chối
+                    <CircleX size={16} color="#ff0a0a" strokeWidth={2.25} /> Từ chối
                   </button>
                 {:else}
                   <button
@@ -218,7 +216,7 @@
                     disabled={actionLoadingId === listing.id}
                     on:click={() => handleApprove(listing, 'rejected')}
                   >
-                    {actionLoadingId === listing.id ? 'Đang xử lý...' : '↺ Duyệt lại'}
+                  <RotateCcw size={16} color="#ffffff" strokeWidth={2.25} /> {actionLoadingId === listing.id ? 'Đang xử lý...' : 'Duyệt lại'}
                   </button>
                 {/if}
               </div>

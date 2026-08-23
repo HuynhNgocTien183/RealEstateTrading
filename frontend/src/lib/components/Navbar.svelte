@@ -1,9 +1,11 @@
 <script>
   import { push } from 'svelte-spa-router';
   import active from 'svelte-spa-router/active';
-  import { authStore } from '../stores/auth';
-  import { logout as apiLogout } from '../api/auth';
+  import { authStore } from '../stores/auth.js';
+  import { logout as apiLogout } from '../api/auth.js';
+  import { ChevronDown, LogOut, UserPen } from '@lucide/svelte';
   import '../../styles/navbar.css';
+
 
   let scrolled = false;
   let dropdownOpen = false;
@@ -112,19 +114,17 @@
               </span>
             {/if}
             <span class="navbar-username">{$authStore.user?.full_name || $authStore.user?.username}</span>
-            <svg class="navbar-caret" class:open={dropdownOpen} width="10" height="6" viewBox="0 0 10 6" fill="none">
-              <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <ChevronDown size={14} class={`navbar-caret${dropdownOpen ? ' open' : ''}`} />
           </button>
 
           {#if dropdownOpen}
             <div class="navbar-dropdown">
               <button class="dropdown-item" on:click={() => { closeDropdown(); goTo('/profile'); }}>
-                👤 Hồ sơ của tôi
+                <UserPen size={16} color="#000000" /> Hồ sơ của tôi
               </button>
               <div class="dropdown-divider"></div>
               <button class="dropdown-item dropdown-item-danger" on:click={handleLogout}>
-                ↪ Đăng xuất
+                <LogOut size={16} color="#d33c3c" strokeWidth={2.5} /> Đăng xuất
               </button>
             </div>
           {/if}

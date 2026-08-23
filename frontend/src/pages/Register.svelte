@@ -1,8 +1,9 @@
 <script>
   import { push } from 'svelte-spa-router';
-  import { register as apiRegister } from '../lib/api/auth';
-  import { getMe } from '../lib/api/auth';
-  import { authStore } from '../lib/stores/auth';
+  import { register as apiRegister } from '../lib/api/auth.js';
+  import { getMe } from '../lib/api/auth.js';
+  import { authStore } from '../lib/stores/auth.js';
+  import {Eye, EyeOff} from '@lucide/svelte';
   import '../styles/register.css';
 
   let username = '';
@@ -10,13 +11,15 @@
   let phone = '';
   let password = '';
   let confirmPassword = '';
-  let role = 'buyer'; // mặc định là Người mua
+  let role = 'buyer'; //mặc định là ng mua
 
   let error = '';
   let loading = false;
 
   let avatarFile = null;
   let avatarPreview = '';
+  let showPassword = false;
+  let showConfirmPassword = false;
 
 
   async function handleSubmit() {
@@ -113,18 +116,50 @@
 
     <div class="register-field">
       <label for="password">Mật khẩu</label>
-      <input id="password" type="password" bind:value={password} required minlength="6" />
+      <div class="password-input-wrapper">
+        <input
+          id="password"
+          type={showPassword ? 'text' : 'password'}
+          bind:value={password}
+          required
+          minlength="6"
+        />
+        <button
+          type="button"
+          class="password-toggle-btn"
+          on:click={() => (showPassword = !showPassword)}
+        >
+          {#if showPassword}
+            <EyeOff size={18} />
+          {:else}
+            <Eye size={18} />
+          {/if}
+        </button>
+      </div>
     </div>
 
     <div class="register-field">
       <label for="confirmPassword">Xác nhận mật khẩu</label>
-      <input
-        id="confirmPassword"
-        type="password"
-        bind:value={confirmPassword}
-        required
-        minlength="6"
-      />
+      <div class="password-input-wrapper">
+        <input
+          id="confirmPassword"
+          type={showConfirmPassword ? 'text' : 'password'}
+          bind:value={confirmPassword}
+          required
+          minlength="6"
+        />
+        <button
+          type="button"
+          class="password-toggle-btn"
+          on:click={() => (showConfirmPassword = !showConfirmPassword)}
+        >
+          {#if showConfirmPassword}
+            <EyeOff size={18} />
+          {:else}
+            <Eye size={18} />
+          {/if}
+        </button>
+      </div>
     </div>
 
     <div class="register-field">

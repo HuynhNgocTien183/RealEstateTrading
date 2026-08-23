@@ -3,6 +3,7 @@
   import { push } from 'svelte-spa-router';
   import { createListing, updateListing, getListingDetail, uploadListingImages, deleteListingImage } from '../lib/api/listings.js';
   import { authStore } from '../lib/stores/auth.js';
+  import { Camera, X } from '@lucide/svelte';
   import '../styles/createListing.css';
     import App from '../App.svelte';
 
@@ -18,7 +19,7 @@
   let floors = '';
   let propertyType = 'house';
   let address = '';
-  let city = 'Hồ Chí Minh'; // Cố định, không cho sửa
+  let city = 'Hồ Chí Minh';
   let district = '';
   let googleMapsUrl = '';
 
@@ -277,7 +278,7 @@
                       disabled={deletingImageId === img.id}
                       on:click={() => handleDeleteExistingImage(img.id)}
                     >
-                      ✕
+                      <X size={12} />
                     </button>
                   </div>
                 {/each}
@@ -288,7 +289,7 @@
 
             <label class="image-upload-label">
               <input type="file" accept="image/*" multiple on:change={handleImageChange} />
-              <span>📷 Thêm ảnh mới</span>
+              <span><Camera size={16} /></span>
             </label>
 
             {#if imagePreviews.length > 0}
@@ -297,7 +298,7 @@
                   <div class="image-preview-item">
                     <img {src} alt="Ảnh mới {i + 1}" />
                     <button type="button" class="remove-image-btn" on:click={() => removeImage(i)}>
-                      ✕
+                      <X size={12} />
                     </button>
                   </div>
                 {/each}
@@ -314,7 +315,7 @@
           {:else}
             <label class="image-upload-label">
               <input type="file" accept="image/*" multiple on:change={handleImageChange} />
-              <span>📷 Chọn ảnh (ảnh đầu tiên sẽ là ảnh đại diện)</span>
+              <span><Camera size={16} /> Chọn ảnh (ảnh đầu tiên sẽ là ảnh đại diện)</span>
             </label>
 
             {#if imagePreviews.length > 0}
@@ -326,7 +327,7 @@
                       <span class="primary-badge">Đại diện</span>
                     {/if}
                     <button type="button" class="remove-image-btn" on:click={() => removeImage(i)}>
-                      ✕
+                      <X size={12} />
                     </button>
                   </div>
                 {/each}

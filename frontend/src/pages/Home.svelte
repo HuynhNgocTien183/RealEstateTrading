@@ -3,10 +3,13 @@
   import { getListings } from '../lib/api/listings';
   import ListingCard from '../lib/components/ListingCard.svelte';
   import SearchBar from '../lib/components/SearchBar.svelte';
-  import '../styles/home.css';
   import PredictionForm from '../lib/components/PredictionForm.svelte';
   import { homeState } from '../lib/stores/homeState.js';
+  
   import { get } from 'svelte/store';
+  import { ChevronDown } from '@lucide/svelte';
+  import '../styles/home.css';
+
   
   let listings = [];
   let loading = true;
@@ -63,7 +66,7 @@
 </script>
 
 <div class="home">
-  <h2>Tìm kiếm Bất động sản</h2>
+  <h2>Tìm kiếm bất động sản</h2>
 
   <SearchBar initialFilters={currentFilters} on:filter={handleFilter} />
   <div class="home-prediction-toggle-wrapper">
@@ -72,7 +75,7 @@
       on:click={() => (showPredictionForm = !showPredictionForm)}
     >
       <span>🤖 Dùng AI dự đoán giá nhà</span>
-      <span class="toggle-arrow" class:open={showPredictionForm}>▼</span>
+      <span class="toggle-arrow" class:open={showPredictionForm}><ChevronDown size={20} color="#000000" strokeWidth={2.25} /></span>
     </button>
 
     {#if showPredictionForm}

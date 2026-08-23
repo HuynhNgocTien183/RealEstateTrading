@@ -16,6 +16,7 @@ class ListingSerializer(serializers.ModelSerializer):
     images = ListingImageSerializer(many=True, read_only=True)
     maps_link = serializers.ReadOnlyField()
     favorites_count = serializers.SerializerMethodField()
+    seller_avatar = serializers.ImageField(source='seller.avatar', read_only=True)
 
     class Meta:
         model = Listing
@@ -27,7 +28,7 @@ class ListingSerializer(serializers.ModelSerializer):
             'google_maps_url', 'maps_link', 'favorites_count',
             'status', 'approval_status', 'rejection_reason',
             'predicted_price', 'views_count',
-            'images', 'created_at', 'updated_at',
+            'images', 'created_at', 'updated_at', 'seller_avatar',
         )
         read_only_fields = (
             'id', 'seller', 'approval_status', 'rejection_reason',
