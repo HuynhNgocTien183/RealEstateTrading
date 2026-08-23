@@ -1,5 +1,76 @@
+# RealEstateTrading
+
+Nền tảng mua bán, đăng tin bất động sản trực tuyến, tích hợp AI dự đoán giá nhà giúp người bán định giá hợp lý và người mua tham khảo giá thị trường.
 
 ---
+
+## Giới thiệu
+
+RealEstateTrading là hệ thống web cho phép:
+- Người bán: đăng tin bất động sản, quản lý tin đăng (sửa/xoá/thêm ảnh), theo dõi trạng thái duyệt.
+- Người mua: tìm kiếm, lọc bất động sản theo tiêu chí, xem chi tiết, lưu tin yêu thích, liên hệ người bán qua Zalo/Email/SĐT.
+- Admin: duyệt hoặc từ chối tin đăng, quản lý toàn bộ hệ thống.
+- AI Dự đoán giá: dựa trên các đặc trưng (diện tích, vị trí, số phòng, loại hình BĐS, tình trạng pháp lý, nội thất...), hệ thống gợi ý mức giá tham khảo.
+
+---
+
+## Công nghệ sử dụng
+
+| Thành phần | Công nghệ |
+|---|---|
+| Backend | Django, Django REST Framework (DRF) |
+| Frontend | Svelte 5 + Vite (JavaScript), svelte-spa-router |
+| Database | MySQL |
+| AI / Machine Learning | Python (scikit-learn, XGBoost, LightGBM, CatBoost), Pandas, Numpy, Jupyter Notebook |
+| Authentication | JWT (djangorestframework-simplejwt), tự động refresh token |
+| Icon | @lucide/svelte |
+| Khác | Git |
+
+---
+
+## Cấu trúc dự án
+
+```
+RealEstateTrading/
+│
+├── backend/                       # Django REST API
+│   ├── manage.py
+│   ├── config/                     # settings.py, urls.py, wsgi/asgi
+│   ├── apps/
+│   │   ├── users/                   # đăng ký, đăng nhập, hồ sơ, phân quyền (buyer/seller/admin)
+│   │   ├── listings/                 # đăng tin, tìm kiếm, quản lý ảnh, duyệt/từ chối tin
+│   │   ├── interactions/             # yêu thích (favorites)
+│   │   └── predictions/              # tích hợp model AI, API dự đoán giá
+│   ├── media/                       # ảnh upload (avatar, ảnh tin đăng)
+│   ├── requirements.txt
+│   └── .venv/
+│
+├── frontend/                      # Giao diện người dùng (Svelte)
+│   ├── public/                     # ảnh tĩnh (logo...)
+│   ├── src/
+│   │   ├── lib/
+│   │   │   ├── api/                  # auth.js, listings.js, interactions.js, predictions.js, client.js
+│   │   │   ├── components/           # Navbar, ListingCard, SearchBar, PredictionForm...
+│   │   │   └── stores/                # auth.js, homeState.js
+│   │   ├── pages/                   # Home, ListingDetail, CreateListing, MyListing, AdminReview,
+│   │   │                            # Login, Register, Profile, SavedListings, SellerListings
+│   │   ├── styles/                  # CSS riêng theo từng trang/component
+│   │   ├── routes.js                # khai báo route cho svelte-spa-router
+│   │   ├── App.svelte
+│   │   └── main.js
+│   └── package.json
+│
+├── ml/                             # Huấn luyện & thử nghiệm mô hình AI
+│   ├── notebooks/                   # train_model.ipynb
+│   ├── data/
+│   │   ├── raw/                      # dữ liệu gốc
+│   │   └── processed/                 # dữ liệu đã xử lý
+│   ├── models/                      # best_model.pkl (model + encoder + metadata)
+│   ├── requirements.txt
+│   └── .venv/
+│
+└── README.md
+```
 
 ## Yêu cầu hệ thống
 
