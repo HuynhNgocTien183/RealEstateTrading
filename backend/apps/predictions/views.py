@@ -28,9 +28,12 @@ class PredictPriceView(APIView):
                 furniture_state=data.get('furniture_state'),
                 city=data.get('city'),
                 district=data.get('district'),
+                ward=data.get('ward'),
             )
         except RuntimeError as e:
             return Response({"detail": str(e)}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        except Exception as e:
+            return Response({"detail": f"Lỗi dự đoán: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
         listing = None
         listing_id = data.get('listing_id')
@@ -60,6 +63,7 @@ class PredictPriceView(APIView):
                 'furniture_state': data.get('furniture_state'),
                 'city': data.get('city'),
                 'district': data.get('district'),
+                'ward': data.get('ward'),
             },
             predicted_price=predicted_price,
             model_version=model_version,

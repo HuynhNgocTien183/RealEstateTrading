@@ -6,7 +6,7 @@ const client = axios.create({
   baseURL: API_BASE_URL,
 });
 
-// Tự động đính kèm access token vào mọi request
+// gắn access token vào request
 client.interceptors.request.use((config) => {
   const token = localStorage.getItem('access_token');
   if (token) {
@@ -15,7 +15,7 @@ client.interceptors.request.use((config) => {
   return config;
 });
 
-// Tự động refresh token khi access token hết hạn (lỗi 401)
+// refresh token
 client.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -34,7 +34,6 @@ client.interceptors.response.use(
           const newAccessToken = res.data.access;
           localStorage.setItem('access_token', newAccessToken);
 
-          // QUAN TRỌNG: lưu lại refresh token MỚI (do backend đã bật ROTATE_REFRESH_TOKENS)
           if (res.data.refresh) {
             localStorage.setItem('refresh_token', res.data.refresh);
           }

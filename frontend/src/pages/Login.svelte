@@ -24,7 +24,12 @@
 
       push('/');
     } catch (err) {
-      error = err.response?.data?.detail || 'Đăng nhập thất bại. Kiểm tra lại tài khoản/mật khẩu.';
+      if (err.response?.status === 401 || err.response?.status === 400) {
+        error = 'Sai tên đăng nhập hoặc mật khẩu.';
+      } else {
+        error = 'Đăng nhập thất bại. Vui lòng thử lại.';
+        
+    }
     } finally {
       loading = false;
     }

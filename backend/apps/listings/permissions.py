@@ -9,6 +9,5 @@ class IsSellerOrReadOnly(permissions.BasePermission):
 
 
 class IsAdminUser(permissions.BasePermission):
-    """Chỉ admin (is_staff=True) mới được duyệt bài."""
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.is_staff

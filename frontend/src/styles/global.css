@@ -2,30 +2,62 @@
   box-sizing: border-box;
 }
 
+html, body {
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: var(--color-text);
   background: var(--color-bg-subtle);
+  line-height: 1.55;
 }
 
 a {
   color: inherit;
 }
 
-button {
+button, input, select, textarea {
   font-family: inherit;
-  font-size: inherit;
 }
 
-input,
-select,
-textarea {
-  font-family: inherit;
-  font-size: inherit;
+h1, h2, h3 {
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  margin: 0;
 }
 
-
-svg {
-  vertical-align: -3px;
+/* Thẻ card dùng chung cho mọi nơi — thay vì mỗi trang tự định nghĩa lại */
+.card {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
 }
+
+/* Nút chính dùng chung — phẳng, không gradient, chỉ đổi màu nhẹ khi hover */
+.btn-primary {
+  padding: 0.65rem 1.1rem;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.btn-primary:hover { background: var(--color-primary-dark); }
+.btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.btn-secondary {
+  padding: 0.65rem 1.1rem;
+  background: white;
+  color: var(--color-text);
+  border: 1.5px solid var(--color-border-input);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+}
+.btn-secondary:hover { border-color: var(--color-primary); background: var(--color-primary-soft); }

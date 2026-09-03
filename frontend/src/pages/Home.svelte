@@ -7,7 +7,7 @@
   import { homeState } from '../lib/stores/homeState.js';
   
   import { get } from 'svelte/store';
-  import { ChevronDown } from '@lucide/svelte';
+  import { ArrowLeft, ArrowRight, ChevronDown } from '@lucide/svelte';
   import '../styles/home.css';
 
   
@@ -85,7 +85,7 @@
     {/if}
   </div>
 
-  <h2>Bài đăng mới</h2>
+
   {#if loading}
     <div class="home-state-message">Đang tải danh sách...</div>
   {:else if error}
@@ -102,11 +102,11 @@
     {#if totalPages > 1}
       <div class="home-pagination">
         <button disabled={currentPage === 1} on:click={() => goToPage(currentPage - 1)}>
-          ← Trước
+          <ArrowLeft size={20} />
         </button>
         <span>Trang {currentPage} / {totalPages}</span>
         <button disabled={currentPage === totalPages} on:click={() => goToPage(currentPage + 1)}>
-          Sau →
+          <ArrowRight size={20} />
         </button>
       </div>
     {/if}

@@ -15,7 +15,7 @@
         const user = await getMe();
         authStore.setUser(user);
       } catch (err) {
-        // Token đã hết hạn và refresh cũng thất bại -> coi như chưa đăng nhập
+
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
       }

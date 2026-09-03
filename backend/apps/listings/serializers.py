@@ -40,7 +40,7 @@ class ListingSerializer(serializers.ModelSerializer):
         return obj.favorited_by.count()
 
 
-# Thêm serializer riêng cho admin duyệt bài
+# admin duyệt bài
 class ListingReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Listing
@@ -48,7 +48,6 @@ class ListingReviewSerializer(serializers.ModelSerializer):
 
 
 class ListingCreateSerializer(serializers.ModelSerializer):
-    """Serializer riêng cho tạo/sửa tin — không cần hiển thị các field read-only."""
     class Meta:
         model = Listing
         fields = (

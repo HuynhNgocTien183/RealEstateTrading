@@ -4,7 +4,6 @@
 
   export let listing = null;
 
-  // Điền sẵn giá trị từ listing hiện tại (nếu có), người dùng có thể chỉnh sửa
   let area = listing?.area ?? '';
   let frontage = listing?.frontage ?? '';
   let accessRoad = listing?.access_road ?? '';

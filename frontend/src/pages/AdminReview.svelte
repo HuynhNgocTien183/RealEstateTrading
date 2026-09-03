@@ -117,7 +117,6 @@
   {:else if $authStore.user?.role !== 'admin'}
     <div class="admin-review-state error">Bạn không có quyền truy cập trang này.</div>
   {:else}
-    <h1>Duyệt tin đăng</h1>
 
     <div class="admin-review-tabs">
       <button

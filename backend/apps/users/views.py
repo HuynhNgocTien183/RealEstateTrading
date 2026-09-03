@@ -10,9 +10,6 @@ User = get_user_model()
 
 
 class RegisterView(generics.CreateAPIView):
-    """
-    Đăng ký tài khoản mới, trả về luôn JWT token để không cần login lại.
-    """
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
@@ -48,9 +45,6 @@ class MeView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LogoutView(APIView):
-    """
-    Đăng xuất: đưa refresh token vào blacklist để không dùng lại được nữa.
-    """
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
