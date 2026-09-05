@@ -33,3 +33,8 @@ export async function updateMe(data) {
   const res = await client.patch('/users/me/', data);
   return res.data;
 }
+
+export async function changePassword(data) {
+  const res = await client.post('/users/change-password/', data);
+  return res.data;
+}

@@ -30,7 +30,6 @@ if os.path.exists(MODEL_PATH):
         _feature_names = _saved.get('features')
         _model_name = _saved.get('model_name', 'Voting Ensemble (LightGBM + CatBoost + XGBoost)')
         _r2_score = _saved.get('r2_score')
-        # Tải từ điển trung vị diện tích thực tế được tính từ tập dữ liệu
         _district_median_areas = _saved.get('district_median_areas', DEFAULT_DISTRICT_MEDIAN_AREAS)
     except Exception as e:
         print(f"Lỗi khi tải mô hình ML: {e}")
@@ -109,7 +108,7 @@ def predict_price(area, frontage=None, access_road=None, floors=None,
         input_df = input_df[_feature_names]
 
     pred_log = _model.predict(input_df)[0]
-    pred_billion_vnd = np.expm1(pred_log)  # Kết quả theo đơn vị tỷ VNĐ
+    pred_billion_vnd = np.expm1(pred_log)
     predicted_price_vnd = float(pred_billion_vnd) * 1_000_000_000
 
     return round(predicted_price_vnd, -6), _model_name

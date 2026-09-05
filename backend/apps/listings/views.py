@@ -23,18 +23,15 @@ class ListingViewSet(viewsets.ModelViewSet):
     search_fields = ['title', 'description', 'address']
     ordering_fields = ['price', 'area', 'created_at']
 
-    # ===== QUERYSET theo quyền hạn =====
     def get_queryset(self):
         user = self.request.user
 
-        # Public list: chỉ hiển thị tin APPROVED + AVAILABLE
         if self.action == 'list':
             return Listing.objects.filter(
                 approval_status=Listing.ApprovalStatus.APPROVED,
                 status=Listing.Status.AVAILABLE,
             )
 
-        # Các action khác (retrieve/update/destroy)
         if user.is_authenticated and user.is_staff:
             return Listing.objects.all()
 
@@ -48,13 +45,12 @@ class ListingViewSet(viewsets.ModelViewSet):
             status=Listing.Status.AVAILABLE,
         )
 
-    # ===== SERIALIZER theo action =====
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
             return ListingCreateSerializer
         return ListingSerializer
 
-    # ===== REDIS CACHE HELPERS =====
+    # redis cache
     def _build_list_cache_key(self, request):
         query_string = request.GET.urlencode()
         digest = hashlib.md5(query_string.encode()).hexdigest()
@@ -63,7 +59,6 @@ class ListingViewSet(viewsets.ModelViewSet):
     def _invalidate_listing_cache(self, listing_id=None):
         invalidate_listing_cache(listing_id)
 
-    # ===== CRUD ACTIONS (Có tích hợp Cache) =====
     def list(self, request, *args, **kwargs):
         cache_key = self._build_list_cache_key(request)
         cached = cache.get(cache_key)
@@ -71,7 +66,7 @@ class ListingViewSet(viewsets.ModelViewSet):
             return Response(cached)
 
         response = super().list(request, *args, **kwargs)
-        ttl = getattr(settings, 'CACHE_TTL_LISTING_LIST', 60 * 15)  # Mặc định 15 phút nếu chưa config
+        ttl = getattr(settings, 'CACHE_TTL_LISTING_LIST', 60 * 15)
         cache.set(cache_key, response.data, timeout=ttl)
         return response
 
@@ -89,7 +84,7 @@ class ListingViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(instance)
         data = serializer.data
-        ttl = getattr(settings, 'CACHE_TTL_LISTING_DETAIL', 60 * 60)  # Mặc định 1 giờ nếu chưa config
+        ttl = getattr(settings, 'CACHE_TTL_LISTING_DETAIL', 60 * 60)
         cache.set(cache_key, data, timeout=ttl)
         return Response(data)
 
@@ -113,7 +108,6 @@ class ListingViewSet(viewsets.ModelViewSet):
         instance.delete()
         self._invalidate_listing_cache(listing_id)
 
-    # ===== ACTION DÀNH RIÊNG CHO ADMIN =====
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated, IsAdminUser])
     def approve(self, request, pk=None):
         listing = self.get_object()

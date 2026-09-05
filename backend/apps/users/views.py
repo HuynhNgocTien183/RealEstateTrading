@@ -3,6 +3,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from .serializers import ChangePasswordSerializer
 
 from .serializers import RegisterSerializer, UserSerializer
 
@@ -66,3 +67,14 @@ class LogoutView(APIView):
                 {"detail": "Token không hợp lệ hoặc đã hết hạn."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+
+class ChangePasswordView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"detail": "Đổi mật khẩu thành công."})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
