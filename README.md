@@ -261,11 +261,6 @@ Phiên bản scikit-learn / XGBoost lúc train phải khớp `backend/requiremen
 ---
 
 ## Ghi chú
-
-- Không có chat trong hệ thống. Liên hệ qua SĐT, Zalo và email trên trang chi tiết tin.
 - Redis không bắt buộc. Cache tin (TTL 15 phút) bỏ qua nếu Redis tắt.
-- API dự đoán đang dùng **v2**. `train_v3.ipynb` (dữ liệu 2025) chỉ để thử nghiệm, chưa gắn frontend/backend.
-- Model v2 hướng tới **nhà phố** TP.HCM, không phải chung cư / đất nền nói chung.
-- Ảnh tin seed tải từ Unsplash; nếu mạng chặn, tin vẫn tạo được nhưng có thể không có ảnh.
 
 Hết.
