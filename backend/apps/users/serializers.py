@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.core.exceptions import ValidationError as DjangoValidationError
 
 User = get_user_model()
 
@@ -47,13 +49,38 @@ class UserSerializer(serializers.ModelSerializer):
             'id', 'username', 'email', 'phone', 'role', 'avatar',
             'first_name', 'last_name', 'full_name',
         )
-        read_only_fields = ('id', 'username', 'role', 'full_name')
+        read_only_fields = ('id', 'role', 'full_name')
+        extra_kwargs = {
+            'username': {'required': False, 'min_length': 3},
+            'avatar': {'required': False, 'allow_null': True},
+        }
+
+    def validate_username(self, value):
+        value = (value or '').strip()
+        if len(value) < 3:
+            raise serializers.ValidationError('Tên đăng nhập phải có ít nhất 3 ký tự.')
+        try:
+            UnicodeUsernameValidator()(value)
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(exc.messages)
+        qs = User.objects.filter(username__iexact=value)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise serializers.ValidationError('Tên đăng nhập đã được sử dụng.')
+        return value
+
+    def update(self, instance, validated_data):
+        new_avatar = validated_data.get('avatar')
+        if new_avatar and instance.avatar:
+            instance.avatar.delete(save=False)
+        return super().update(instance, validated_data)
 
 
 
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(write_only=True, required=True)
-    new_password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    new_password =serializers.CharField(write_only=True, required=True, validators=[validate_password])
     new_password2 = serializers.CharField(write_only=True, required=True)
 
     def validate_old_password(self, value):

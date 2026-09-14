@@ -32,15 +32,25 @@
 }
 
 /* Avatar */
+.profile-avatar-upload {
+  position: relative;
+  display: block;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 0 0 4px var(--color-primary-soft, #eff6ff);
+}
+
 .profile-avatar-image,
 .profile-avatar-placeholder {
   width: 96px;
   height: 96px;
   border-radius: 50%;
-  box-shadow: 0 0 0 4px var(--color-primary-soft, #eff6ff);
 }
 
-.profile-avatar-image { object-fit: cover; }
+.profile-avatar-image { object-fit: cover; display: block; }
 
 .profile-avatar-placeholder {
   display: flex;
@@ -50,6 +60,31 @@
   color: white;
   font-size: 2.2rem;
   font-weight: 800;
+}
+
+.profile-avatar-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.55);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.profile-avatar-upload:hover .profile-avatar-overlay,
+.profile-avatar-upload:focus-visible .profile-avatar-overlay {
+  opacity: 1;
+}
+
+.profile-avatar-hint {
+  margin: 0.45rem 0 0;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
 }
 
 .profile-fullname-display {

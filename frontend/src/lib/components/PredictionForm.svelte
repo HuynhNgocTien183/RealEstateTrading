@@ -7,9 +7,9 @@
   let area = listing?.area ?? '';
   let frontage = listing?.frontage ?? '';
   let accessRoad = listing?.access_road ?? '';
-  let floors = listing?.floors ?? 1;
-  let bedrooms = listing?.bedrooms ?? 0;
-  let bathrooms = listing?.bathrooms ?? 0;
+  let floors = listing?.floors || '';
+  let bedrooms = listing?.bedrooms || '';
+  let bathrooms = listing?.bathrooms || '';
   let legalStatus = listing?.legal_status ?? 'Have certificate';
   let furnitureState = listing?.furniture_state ?? 'Full';
   let city = listing?.city ?? 'Hồ Chí Minh';
@@ -40,10 +40,18 @@
       'Bình Tân',
       'Thủ Đức',
       'Nhà Bè',
-      "Hóc Môn",
-      "Củ Chi",
-      "Bình Chánh",
+      'Hóc Môn',
+      'Củ Chi',
+      'Bình Chánh',
+      'Cần Giờ',
   ];
+
+  function toOptionalNumber(value) {
+    if (value === '' || value === null || value === undefined) return undefined;
+    const num = Number(value);
+    if (!Number.isFinite(num) || num === 0) return undefined;
+    return num;
+  }
 
   function formatPrice(price) {
     const num = Number(price);
@@ -59,15 +67,17 @@
     try {
       const data = await predictPrice({
         area: Number(area),
-        frontage: frontage ? Number(frontage) : undefined,
-        access_road: accessRoad ? Number(accessRoad) : undefined,
-        floors: Number(floors),
-        bedrooms: Number(bedrooms),
-        bathrooms: Number(bathrooms),
+        frontage: toOptionalNumber(frontage),
+        access_road: toOptionalNumber(accessRoad),
+        floors: toOptionalNumber(floors),
+        bedrooms: toOptionalNumber(bedrooms),
+        bathrooms: toOptionalNumber(bathrooms),
         legal_status: legalStatus,
         furniture_state: furnitureState,
         city,
         district,
+        address: listing?.address ?? '',
+        property_type: listing?.property_type ?? 'house',
         listing_id: listing?.id ?? undefined,
       });
       result = data;
@@ -82,19 +92,16 @@
 
 <div class="prediction-form-card">
   <h3>🤖 Dự đoán giá nhà bằng AI</h3>
-  <p class="prediction-form-hint">
-    Nhập thông tin bất động sản để nhận mức giá tham khảo và so sánh với mức giá thực tế.
-  </p>
 
   <form on:submit|preventDefault={handlePredict}>
     <div class="prediction-form-row">
       <label>
         Diện tích (m²)
-        <input type="number" bind:value={area} min="1" required />
+        <input type="number" bind:value={area} min="1" step="0.1" required />
       </label>
       <label>
         Số tầng
-        <input type="number" bind:value={floors} min="1" />
+        <input type="number" bind:value={floors} min="1" placeholder="Để trống nếu không rõ" />
       </label>
     </div>
 
@@ -112,11 +119,11 @@
     <div class="prediction-form-row">
       <label>
         Phòng ngủ
-        <input type="number" bind:value={bedrooms} min="0" required />
+        <input type="number" bind:value={bedrooms} min="1" placeholder="Để trống nếu không rõ" />
       </label>
       <label>
         Phòng tắm
-        <input type="number" bind:value={bathrooms} min="0" required />
+        <input type="number" bind:value={bathrooms} min="1" placeholder="Để trống nếu không rõ" />
       </label>
     </div>
 
@@ -139,19 +146,19 @@
     </label>
 
     <div class="prediction-form-row">
-    <label>
+      <label>
         Thành phố
         <input type="text" value={city} disabled />
-    </label>
-    <label>
+      </label>
+      <label>
         Quận/Huyện
-        <select bind:value={district}>
-        <option value="">-- Chọn Quận/Huyện --</option>
-        {#each districtOptions as d}
+        <select bind:value={district} required>
+          <option value="">-- Chọn Quận/Huyện --</option>
+          {#each districtOptions as d}
             <option value={d}>{d}</option>
-        {/each}
+          {/each}
         </select>
-    </label>
+      </label>
     </div>
 
     <button type="submit" disabled={loading}>

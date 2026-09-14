@@ -40,7 +40,6 @@ class ListingSerializer(serializers.ModelSerializer):
         return obj.favorited_by.count()
 
 
-# admin duyệt bài
 class ListingReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Listing

@@ -174,10 +174,20 @@
     const cleanedPhone = phone.replace(/[\s\-().]/g, '');
     return `https://zalo.me/${cleanedPhone}`;
   }
+
+  function goBack() {
+    if (window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+    window.location.hash = '#/';
+  }
 </script>
 
 <div class="listing-detail">
-  <button class="btn-back" on:click={() => history.back()}> <ArrowLeft size={16} /> </button>
+  <button class="btn-back" type="button" on:click={goBack} aria-label="Quay về">
+    <ArrowLeft size={16} />
+  </button>
   {#if loading}
     <div class="listing-detail-state">Đang tải thông tin...</div>
   {:else if error}

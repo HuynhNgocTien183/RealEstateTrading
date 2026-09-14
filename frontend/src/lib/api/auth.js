@@ -2,7 +2,7 @@ import client from './client';
 
 export async function login(username, password) {
   const res = await client.post('/token/', { username, password });
-  return res.data; // { access, refresh }
+  return res.data; 
 }
 
 export async function register(userData) {
@@ -30,7 +30,13 @@ export async function getMe() {
 }
 
 export async function updateMe(data) {
-  const res = await client.patch('/users/me/', data);
+  const formData = new FormData();
+  Object.entries(data).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+    if (key === 'avatar' && !(value instanceof File)) return;
+    formData.append(key, value);
+  });
+  const res = await client.patch('/users/me/', formData);
   return res.data;
 }
 

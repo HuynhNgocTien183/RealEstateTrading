@@ -127,7 +127,7 @@
               {/if}
 
               <div class="my-listing-actions">
-                <a class="btn-action-link" href={`#/listings/${listing.id}`} target="_blank" rel="noopener">
+                <a class="btn-action-link" href={`#/listings/${listing.id}`}>
                   Xem chi tiết <CornerUpRight size={16} color="#121212" strokeWidth={2.25} />
                 </a>
                 <a class="btn-action-link" href={`#/edit-listing/${listing.id}`}>

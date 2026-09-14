@@ -71,7 +71,6 @@ class ListingViewSet(viewsets.ModelViewSet):
         return response
 
     def retrieve(self, request, *args, **kwargs):
-        # Tăng view trực tiếp ở database bằng F expression chống race-condition
         instance = self.get_object()
         Listing.objects.filter(id=instance.id).update(views_count=F('views_count') + 1)
         instance.refresh_from_db(fields=['views_count'])
@@ -146,7 +145,7 @@ class ListingViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
 
-    # ===== ACTION DÀNH CHO SELLER =====
+
     @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def my_listings(self, request):
         qs = Listing.objects.filter(seller=request.user)

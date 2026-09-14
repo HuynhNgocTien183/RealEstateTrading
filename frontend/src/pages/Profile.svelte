@@ -9,6 +9,7 @@
   let error = "";
   let saving = false;
   let saveMessage = "";
+  let saveError = "";
 
   let username = "";
   let firstName = "";
@@ -18,6 +19,7 @@
   let phone = "";
   let role = "";
   let avatarUrl = "";
+  let avatarFile = null;
 
   let oldPassword = "";
   let newPassword = "";
@@ -91,22 +93,49 @@
     }
   }
 
+  function handleAvatarChange(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    avatarFile = file;
+    if (avatarUrl && avatarUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(avatarUrl);
+    }
+    avatarUrl = URL.createObjectURL(file);
+  }
+
+  function firstApiError(err, fallback) {
+    const resErrors = err.response?.data;
+    if (resErrors && typeof resErrors === "object") {
+      const firstKey = Object.keys(resErrors)[0];
+      const firstMsg = Array.isArray(resErrors[firstKey])
+        ? resErrors[firstKey][0]
+        : resErrors[firstKey];
+      return firstMsg || fallback;
+    }
+    return fallback;
+  }
+
   async function handleSave() {
     saving = true;
     saveMessage = "";
+    saveError = "";
     try {
       const updated = await updateMe({
+        username: username.trim(),
         email,
         phone,
         first_name: firstName,
         last_name: lastName,
+        avatar: avatarFile || undefined,
       });
       authStore.setUser(updated);
+      username = updated.username;
       avatarUrl = updated.avatar || avatarUrl;
       fullName = updated.full_name;
+      avatarFile = null;
       saveMessage = "Đã cập nhật thông tin thành công!";
     } catch (err) {
-      saveMessage = "Cập nhật thất bại. Vui lòng thử lại.";
+      saveError = firstApiError(err, "Cập nhật thất bại. Vui lòng thử lại.");
       console.error(err);
     } finally {
       saving = false;
@@ -127,24 +156,43 @@
     <div class="profile-state error">{error}</div>
   {:else}
     <div class="profile-card">
-      {#if avatarUrl}
-        <img
-          class="profile-avatar-image"
-          src={avatarUrl}
-          alt="Avatar của {username}"
-        />
-      {:else}
-        <div class="profile-avatar-placeholder">
-          {username?.charAt(0)?.toUpperCase() || "?"}
-        </div>
-      {/if}
+      <label for="profile-avatar-input" class="profile-avatar-upload">
+        {#if avatarUrl}
+          <img
+            class="profile-avatar-image"
+            src={avatarUrl}
+            alt="Avatar của {username}"
+          />
+        {:else}
+          <div class="profile-avatar-placeholder">
+            {username?.charAt(0)?.toUpperCase() || "?"}
+          </div>
+        {/if}
+        <span class="profile-avatar-overlay">Đổi ảnh</span>
+      </label>
+      <input
+        id="profile-avatar-input"
+        type="file"
+        accept="image/*"
+        hidden
+        on:change={handleAvatarChange}
+      />
+      <p class="profile-avatar-hint">Bấm vào ảnh để đổi avatar</p>
 
       <p class="profile-fullname-display">{fullName}</p>
 
       <form on:submit|preventDefault={handleSave}>
         <div class="profile-field">
           <label for="username">Tên đăng nhập</label>
-          <input id="username" type="text" value={username} disabled />
+          <input
+            id="username"
+            type="text"
+            bind:value={username}
+            required
+            minlength="3"
+            maxlength="150"
+            autocomplete="username"
+          />
         </div>
 
         <div class="profile-field">
@@ -188,6 +236,9 @@
           <input id="phone" type="tel" bind:value={phone} />
         </div>
 
+        {#if saveError}
+          <p class="profile-password-error">{saveError}</p>
+        {/if}
         {#if saveMessage}
           <p class="profile-save-message">{saveMessage}</p>
         {/if}

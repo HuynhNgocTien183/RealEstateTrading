@@ -21,6 +21,12 @@
     'None': 'Không nội thất',
   };
 
+  const housePositionLabels = {
+    Alley: 'Hẻm',
+    Frontage: 'Mặt tiền',
+    Unknown: 'Không rõ',
+  };
+
   function formatPrice(price) {
     const num = Number(price);
     if (num >= 1_000_000_000) return `${(num / 1_000_000_000).toFixed(2)} tỷ`;
@@ -110,6 +116,26 @@
               <div class="ph-input-item">
                 <span class="ph-input-label">Đường vào</span>
                 <span class="ph-input-value">{log.input_data.access_road} m</span>
+              </div>
+            {/if}
+            {#if log.input_data?.house_position}
+              <div class="ph-input-item">
+                <span class="ph-input-label">Vị trí nhà</span>
+                <span class="ph-input-value">
+                  {housePositionLabels[log.input_data.house_position] || log.input_data.house_position}
+                </span>
+              </div>
+            {/if}
+            {#if log.input_data?.street}
+              <div class="ph-input-item">
+                <span class="ph-input-label">Đường</span>
+                <span class="ph-input-value">{log.input_data.street}</span>
+              </div>
+            {/if}
+            {#if log.input_data?.ward}
+              <div class="ph-input-item">
+                <span class="ph-input-label">Phường/Xã</span>
+                <span class="ph-input-value">{log.input_data.ward}</span>
               </div>
             {/if}
             {#if log.input_data?.legal_status}

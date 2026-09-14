@@ -185,12 +185,7 @@
               {/if}
 
               <div class="admin-review-actions">
-                <a
-                  class="btn-view-detail"
-                  href={`#/listings/${listing.id}`}
-                  target="_blank"
-                  rel="noopener"
-                >
+                <a class="btn-view-detail" href={`#/listings/${listing.id}`}>
                   Xem chi tiết <CornerUpRight size={16} color="#121212" strokeWidth={2.25} />
                 </a>
 

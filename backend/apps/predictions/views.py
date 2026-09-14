@@ -15,6 +15,18 @@ class PredictPriceView(APIView):
         serializer = PredictionRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
+        listing_id = data.get('listing_id')
+        listing = Listing.objects.filter(id=listing_id).first() if listing_id else None
+        address = data.get('address') or (listing.address if listing else '')
+        if not address:
+            address = ', '.join(
+                part for part in (
+                    data.get('street'),
+                    data.get('ward'),
+                    data.get('district'),
+                    data.get('city'),
+                ) if part
+            )
 
         try:
             predicted_price, model_version = predict_price(
@@ -22,26 +34,25 @@ class PredictPriceView(APIView):
                 frontage=data.get('frontage'),
                 access_road=data.get('access_road'),
                 floors=data.get('floors'),
-                bedrooms=data['bedrooms'],
-                bathrooms=data['bathrooms'],
+                bedrooms=data.get('bedrooms'),
+                bathrooms=data.get('bathrooms'),
                 legal_status=data.get('legal_status'),
                 furniture_state=data.get('furniture_state'),
                 city=data.get('city'),
                 district=data.get('district'),
                 ward=data.get('ward'),
+                address=address,
+                street=data.get('street'),
+                property_type=data.get('property_type'),
             )
         except RuntimeError as e:
             return Response({"detail": str(e)}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
         except Exception as e:
             return Response({"detail": f"Lỗi dự đoán: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
-        listing = None
-        listing_id = data.get('listing_id')
-        if listing_id:
-            listing = Listing.objects.filter(id=listing_id).first()
-            if listing:
-                listing.predicted_price = predicted_price
-                listing.save(update_fields=['predicted_price'])
+        if listing:
+            listing.predicted_price = predicted_price
+            listing.save(update_fields=['predicted_price'])
 
         log = PredictionLog.objects.create(
             user=request.user if request.user.is_authenticated else None,
@@ -49,8 +60,8 @@ class PredictPriceView(APIView):
             input_area=data['area'],
             input_city=data.get('city', ''),
             input_district=data.get('district', ''),
-            input_bedrooms=data['bedrooms'],
-            input_bathrooms=data['bathrooms'],
+            input_bedrooms=data.get('bedrooms') or 0,
+            input_bathrooms=data.get('bathrooms') or 0,
             input_property_type=data.get('property_type', ''),
             input_data={
                 'area': str(data.get('area', '')),
@@ -64,6 +75,9 @@ class PredictPriceView(APIView):
                 'city': data.get('city'),
                 'district': data.get('district'),
                 'ward': data.get('ward'),
+                'address': address,
+                'street': data.get('street'),
+                'property_type': data.get('property_type'),
             },
             predicted_price=predicted_price,
             model_version=model_version,
