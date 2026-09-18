@@ -84,6 +84,9 @@
       </div>
     {/if}
   </div>
+  <!-- <a href="#/advisor" class="home-advisor-cta">
+    💬 Hỏi AI tư vấn nhà đất (Gemini + RAG)
+  </a> -->
 
 
   {#if loading}

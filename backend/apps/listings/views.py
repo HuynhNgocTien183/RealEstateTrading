@@ -59,7 +59,15 @@ class ListingViewSet(viewsets.ModelViewSet):
     def _invalidate_listing_cache(self, listing_id=None):
         invalidate_listing_cache(listing_id)
 
+    def paginate_queryset(self, queryset):
+        if self.action == 'list' and self.request.query_params.get('seller'):
+            return None
+        return super().paginate_queryset(queryset)
+
     def list(self, request, *args, **kwargs):
+        if request.query_params.get('seller'):
+            return super().list(request, *args, **kwargs)
+
         cache_key = self._build_list_cache_key(request)
         cached = cache.get(cache_key)
         if cached is not None:
@@ -149,10 +157,6 @@ class ListingViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def my_listings(self, request):
         qs = Listing.objects.filter(seller=request.user)
-        page = self.paginate_queryset(qs)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
 

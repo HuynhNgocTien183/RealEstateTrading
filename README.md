@@ -25,6 +25,7 @@ AI dự đoán giá dùng mô hình **v2** (`best_model_v2.pkl`), học trên d�
 | Database | MySQL 8 |
 | Cache | Redis (tuỳ chọn, lỗi Redis không chặn API) |
 | AI / ML | Python, Pandas, NumPy, scikit-learn, XGBoost, LightGBM, CatBoost, Jupyter |
+| AI tư vấn | LangChain, Gemini, FAISS (RAG trên tin đã duyệt) |
 | Authentication | JWT (`djangorestframework-simplejwt`), refresh + blacklist |
 | Khác | Git, Pillow (ảnh avatar / tin đăng) |
 
@@ -44,7 +45,8 @@ RealEstateTrading/
 │   │   │   └── management/commands/
 │   │   │       └── seed_listings.py  # tạo 30 tin mẫu từ CSV 2024
 │   │   ├── interactions/             # tin yêu thích
-│   │   └── predictions/              # ml_service.py + API dự đoán / lịch sử
+│   │   ├── predictions/              # ml_service.py + API dự đoán / lịch sử
+│   │   └── advisor/                  # RAG Gemini + LangChain, chat tư vấn nhà đất
 │   ├── media/                        # avatar, ảnh tin đăng
 │   ├── requirements.txt
 │   └── .env                          # cấu hình DB, SECRET_KEY (không commit)
@@ -53,12 +55,12 @@ RealEstateTrading/
 │   ├── public/                       # logo.png
 │   ├── src/
 │   │   ├── lib/
-│   │   │   ├── api/                  # auth, listings, interactions, predictions
+│   │   │   ├── api/                  # auth, listings, interactions, predictions, advisor
 │   │   │   ├── components/           # Navbar, ListingCard, SearchBar, PredictionForm
 │   │   │   └── stores/               # auth, homeState
 │   │   ├── pages/                    # Home, ListingDetail, CreateListing, MyListing,
 │   │   │                            # AdminReview, Login, Register, Profile,
-│   │   │                            # SavedListings, SellerListings, PredictionHistory
+│   │   │                            # SavedListings, SellerListings, PredictionHistory, Advisor
 │   │   ├── styles/
 │   │   ├── routes.js
 │   │   ├── App.svelte
@@ -114,6 +116,10 @@ DB_USER=root
 DB_PASSWORD=your-password
 DB_HOST=127.0.0.1
 DB_PORT=3306
+
+GOOGLE_API_KEY=your-gemini-api-key
+GEMINI_MODEL=gemini-3.6-flash
+GEMINI_EMBEDDING_MODEL=gemini-embedding-001
 ```
 
 Tạo database MySQL (charset `utf8mb4`), rồi:
@@ -163,6 +169,18 @@ Chạy `ml/notebooks/train_v2.ipynb` để tạo `ml/models/best_model_v2.pkl`. 
 
 Phiên bản scikit-learn / XGBoost lúc train phải khớp `backend/requirements.txt` (`scikit-learn==1.8.0`, `xgboost==3.4.1`) để `joblib.load` không lỗi.
 
+### 5. AI tư vấn nhà đất
+
+Lấy API key Gemini tại [Google AI Studio](https://aistudio.google.com/apikey), điền `GOOGLE_API_KEY` trong `backend/.env`, cài thêm gói LangChain (đã có trong `backend/requirements.txt`), rồi:
+
+```bash
+cd backend
+python manage.py migrate
+python manage.py rebuild_advisor_index
+```
+
+`rebuild_advisor_index` không bắt buộc: lần chat đầu tiên sẽ tự lập chỉ mục FAISS từ tin đã duyệt.
+
 ---
 
 ## Tính năng chính
@@ -191,6 +209,7 @@ Phiên bản scikit-learn / XGBoost lúc train phải khớp `backend/requiremen
 - Lưu / bỏ yêu thích (cần đăng nhập)
 - Xem toàn bộ tin đã duyệt của một người bán
 - Liên hệ: điện thoại, Zalo, email
+- **Tư vấn AI:** hỏi chatbot gợi ý tin đang bán theo ngân sách, quận, số phòng
 
 ### Admin
 
@@ -206,6 +225,15 @@ Phiên bản scikit-learn / XGBoost lúc train phải khớp `backend/requiremen
 - Giá trả về đơn vị VNĐ; lịch sử lưu khi user đã đăng nhập
 - Trang **Lịch sử định giá** xem các lần đã dự đoán
 - Model so sánh Random Forest, Gradient Boosting, XGBoost, LightGBM, CatBoost trên tập 2024 (lọc nhà phố điển hình, `REL_MAX = 0.25`) rồi lưu mô hình tốt nhất
+
+### AI tư vấn nhà đất (RAG + Gemini)
+
+- Trang `#/advisor` và nút trên trang chủ / navbar
+- Embedding tin đã duyệt + kiến thức mua nhà bằng Gemini, lưu FAISS
+- LangChain truy xuất tin liên quan rồi Gemini trả lời tiếng Việt
+- Kèm thẻ tin nguồn, bấm vào xem chi tiết
+- Chỉ mục tự dựng lại khi tin đăng đổi; admin có thể chạy `python manage.py rebuild_advisor_index`
+- Cần `GOOGLE_API_KEY` (Google AI Studio). Lần chat đầu có thể chậm vì phải embed
 
 ---
 
@@ -234,10 +262,14 @@ Phiên bản scikit-learn / XGBoost lúc train phải khớp `backend/requiremen
 | 19 | Listings | POST | `/api/listings/{id}/reject/` | Admin | Từ chối (kèm lý do) |
 | 20 | Predictions | POST | `/api/predictions/predict/` | Public | Dự đoán giá; user đăng nhập thì lưu lịch sử |
 | 21 | Predictions | GET | `/api/predictions/history/` | Đã đăng nhập | Lịch sử dự đoán của mình |
-| 22 | Interactions | GET | `/api/interactions/favorites/` | Đã đăng nhập | Danh sách yêu thích |
-| 23 | Interactions | POST | `/api/interactions/favorites/` | Đã đăng nhập | Thêm yêu thích |
-| 24 | Interactions | DELETE | `/api/interactions/favorites/{id}/` | Đã đăng nhập | Bỏ yêu thích |
-| 25 | Django Admin | — | `/admin/` | Staff / superuser | Trang quản trị |
+| 22 | Advisor | POST | `/api/advisor/chat/` | Public | Hỏi AI tư vấn (RAG). Body: `message`, `session_id` (tuỳ chọn) |
+| 23 | Advisor | GET | `/api/advisor/chat/?session_id=` | Public | Lấy tin nhắn của một phiên chat |
+| 24 | Advisor | GET | `/api/advisor/history/` | Đã đăng nhập | Phiên chat gần nhất của user |
+| 25 | Advisor | POST | `/api/advisor/reindex/` | Admin | Lập lại chỉ mục FAISS |
+| 26 | Interactions | GET | `/api/interactions/favorites/` | Đã đăng nhập | Danh sách yêu thích |
+| 27 | Interactions | POST | `/api/interactions/favorites/` | Đã đăng nhập | Thêm yêu thích |
+| 28 | Interactions | DELETE | `/api/interactions/favorites/{id}/` | Đã đăng nhập | Bỏ yêu thích |
+| 29 | Django Admin | — | `/admin/` | Staff / superuser | Trang quản trị |
 
 ---
 
@@ -255,6 +287,7 @@ Phiên bản scikit-learn / XGBoost lúc train phải khớp `backend/requiremen
 | `#/saved-listings` | Yêu thích |
 | `#/seller/:id/listings` | Tin của một người bán |
 | `#/prediction-history` | Lịch sử định giá |
+| `#/advisor` | AI tư vấn nhà đất (RAG + Gemini) |
 | `#/profile` | Hồ sơ, avatar, đổi mật khẩu |
 | `#/admin/review` | Duyệt tin (admin) |
 
@@ -262,5 +295,6 @@ Phiên bản scikit-learn / XGBoost lúc train phải khớp `backend/requiremen
 
 ## Ghi chú
 - Redis không bắt buộc. Cache tin (TTL 15 phút) bỏ qua nếu Redis tắt.
+- AI tư vấn cần `GOOGLE_API_KEY`. Chỉ mục FAISS nằm ở `backend/media/advisor_index/` (không commit). Lần hỏi đầu tiên sẽ tự lập chỉ mục nếu chưa có.
 
 Hết.

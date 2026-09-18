@@ -1,8 +1,9 @@
 from pathlib import Path
 from datetime import timedelta
-from decouple import config
+from decouple import AutoConfig
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+config = AutoConfig(search_path=BASE_DIR)
 
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=True, cast=bool)
@@ -23,6 +24,7 @@ INSTALLED_APPS = [
     'apps.listings',
     'apps.interactions',
     'apps.predictions',
+    'apps.advisor',
 
     'django_filters',
     'rest_framework_simplejwt.token_blacklist'
@@ -100,6 +102,8 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
 ]
 
 CACHES = {
@@ -128,3 +132,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+GOOGLE_API_KEY = config('GOOGLE_API_KEY', default='')
+GEMINI_MODEL = config('GEMINI_MODEL', default='gemini-3.6-flash')
+GEMINI_EMBEDDING_MODEL = config('GEMINI_EMBEDDING_MODEL', default='gemini-embedding-001')
+ADVISOR_INDEX_DIR = BASE_DIR / 'media' / 'advisor_index'
+ADVISOR_RETRIEVE_K = config('ADVISOR_RETRIEVE_K', default=6, cast=int)

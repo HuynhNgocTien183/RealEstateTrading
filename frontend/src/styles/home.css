@@ -45,7 +45,7 @@
 }
 
 .home-prediction-toggle-wrapper {
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-sm);
 }
 
 .home-prediction-toggle-btn {
@@ -81,6 +81,25 @@
 .home-prediction-form-panel {
   margin-top: 0.6rem;
   animation: slideDown 0.2s ease-out;
+}
+
+.home-advisor-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--spacing-lg);
+  padding: 0.85rem 1.1rem;
+  background: rgba(37, 99, 235, 0.06);
+  border: 1px solid rgba(37, 99, 235, 0.22);
+  border-radius: var(--radius-md);
+  color: var(--color-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.home-advisor-cta:hover {
+  background: rgba(37, 99, 235, 0.1);
+  border-color: var(--color-primary);
 }
 
 @keyframes slideDown {

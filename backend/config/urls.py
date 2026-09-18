@@ -17,6 +17,7 @@ urlpatterns = [
     path('api/listings/', include('apps.listings.urls')),
     path('api/predictions/', include('apps.predictions.urls')),
     path('api/interactions/', include('apps.interactions.urls')),
+    path('api/advisor/', include('apps.advisor.urls')),
 ]
 
 if settings.DEBUG:

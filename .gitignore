@@ -15,6 +15,7 @@ ml/data/raw/*
 
 .env
 .env.local
+backend/media/advisor_index/
 
 .DS_Store
 Thumbs.db

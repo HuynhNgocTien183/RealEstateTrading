@@ -9,6 +9,7 @@ import Profile from './pages/Profile.svelte';
 import SavedListings from './pages/SavedListings.svelte';
 import SellerListings from './pages/SellerListings.svelte';
 import PredictionHistory from './pages/PredictionHistory.svelte';
+import Advisor from './pages/Advisor.svelte';
 
 export default {
   '/': Home,
@@ -23,4 +24,5 @@ export default {
   '/saved-listings': SavedListings,
   '/seller/:id/listings': SellerListings,
   '/prediction-history': PredictionHistory,
+  '/advisor': Advisor,
 };
